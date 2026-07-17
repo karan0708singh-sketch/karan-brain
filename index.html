@@ -19,9 +19,6 @@
     --lime: #7dff66;
     --violet: #a78bfa;
     --bg: #050805;
-    --night1: #04061a;
-    --night2: #0a1238;
-    --night3: #101c52;
   }
 
   html, body { height: 100%; background: #000; overflow: hidden; }
@@ -36,43 +33,73 @@
   .hidden-stage { display: none !important; }
 
   /* ════════════════════════════════════════════════════════
-     SCENE 1 — the sea, the boat, the human
+     SCENE 1 — night sea, sailboat, cartoon Karan
      ════════════════════════════════════════════════════════ */
   #intro-stage {
-    background: linear-gradient(180deg, #01020c 0%, var(--night1) 34%, var(--night2) 62%, var(--night3) 100%);
+    background: linear-gradient(180deg, #010210 0%, #04061f 30%, #0a1238 58%, #14205a 100%);
     z-index: 40;
     overflow: hidden;
-    transition: transform 2.3s cubic-bezier(.72,.01,.98,.44), opacity .5s ease 1.9s;
+    transition: transform 2.1s cubic-bezier(.75,.02,.98,.4), opacity .45s ease 1.75s;
   }
-  #intro-stage.zooming {
-    transform: scale(17);
-    opacity: 0;
-    pointer-events: none;
-  }
+  #intro-stage.zooming { transform: scale(19); opacity: 0; pointer-events: none; }
   #intro-stage.gone { display: none; }
 
   .star {
     position: absolute; border-radius: 50%; background: #cfe8ff;
     animation: twinkle 3s infinite;
   }
-  @keyframes twinkle { 0%,100% { opacity: .9; } 50% { opacity: .15; } }
+  @keyframes twinkle { 0%,100% { opacity: .9; } 50% { opacity: .1; } }
 
-  .moon {
-    position: absolute; top: 8%; right: 12%;
-    width: 74px; height: 74px; border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, #fdf6d8, #d9cfa2 70%);
-    box-shadow: 0 0 60px 18px rgba(253, 246, 216, .25);
+  .shooting-star {
+    position: absolute; top: 14%; left: -8%;
+    width: 130px; height: 2px; border-radius: 2px;
+    background: linear-gradient(90deg, transparent, #dff1ff);
+    transform: rotate(16deg);
+    opacity: 0;
+    animation: shoot 7s ease-in 2.2s infinite;
+  }
+  @keyframes shoot {
+    0% { opacity: 0; transform: translate(0,0) rotate(16deg); }
+    3% { opacity: .9; }
+    9% { opacity: 0; transform: translate(58vw, 17vw) rotate(16deg); }
+    100% { opacity: 0; transform: translate(58vw, 17vw) rotate(16deg); }
   }
 
+  .moon {
+    position: absolute; top: 7%; right: 11%;
+    width: 84px; height: 84px; border-radius: 50%;
+    background: radial-gradient(circle at 36% 34%, #fdf6d8, #e4d8a8 66%, #cbbd8a);
+    box-shadow: 0 0 70px 22px rgba(253, 246, 216, .22);
+  }
+  .moon::after {
+    content: ''; position: absolute; inset: 0; border-radius: 50%;
+    background:
+      radial-gradient(9px 9px at 30% 58%, rgba(160,145,100,.5), transparent 70%),
+      radial-gradient(6px 6px at 62% 30%, rgba(160,145,100,.45), transparent 70%),
+      radial-gradient(5px 5px at 55% 70%, rgba(160,145,100,.4), transparent 70%);
+  }
+
+  .cloud {
+    position: absolute; height: 16px; border-radius: 20px;
+    background: rgba(150,175,220,.13);
+    animation: cloudDrift linear infinite;
+  }
+  .cloud::before {
+    content: ''; position: absolute; top: -9px; left: 22%;
+    width: 42%; height: 18px; border-radius: 20px;
+    background: inherit;
+  }
+  @keyframes cloudDrift { from { transform: translateX(-220px); } to { transform: translateX(110vw); } }
+
   #intro-title {
-    position: absolute; top: 12%; left: 50%; transform: translateX(-50%);
+    position: absolute; top: 10%; left: 50%; transform: translateX(-50%);
     text-align: center; opacity: 0; transition: opacity 1.2s ease;
-    z-index: 5; width: 90%;
+    z-index: 5; width: 92%;
   }
   #intro-title.show { opacity: 1; }
   #intro-title .t1 {
-    font-size: clamp(26px, 5vw, 54px); font-weight: 700; letter-spacing: 4px;
-    color: #eaf6ff; text-shadow: 0 0 24px rgba(61,220,255,.55);
+    font-size: clamp(26px, 5vw, 54px); font-weight: 700; letter-spacing: 5px;
+    color: #eaf6ff; text-shadow: 0 0 26px rgba(61,220,255,.6);
   }
   #intro-title .t2 {
     margin-top: 10px; font-size: clamp(11px, 1.6vw, 15px);
@@ -81,9 +108,17 @@
 
   /* sea */
   .sea {
-    position: absolute; left: 0; right: 0; bottom: 0; height: 34%;
-    background: linear-gradient(180deg, #0c2547 0%, #071a36 45%, #040f22 100%);
+    position: absolute; left: 0; right: 0; bottom: 0; height: 32%;
+    background: linear-gradient(180deg, #0e2c54 0%, #081d3c 45%, #041025 100%);
   }
+  .moonpath {
+    position: absolute; top: 0; bottom: 0; right: 13%;
+    width: 70px;
+    background: linear-gradient(180deg, rgba(253,246,216,.14), transparent 75%);
+    filter: blur(6px);
+    animation: shimmer 3.4s ease-in-out infinite;
+  }
+  @keyframes shimmer { 0%,100% { opacity: .8; transform: scaleX(1); } 50% { opacity: .45; transform: scaleX(.82); } }
   .wave {
     position: absolute; left: -60%; width: 220%; height: 26px; opacity: .5;
     background: radial-gradient(60px 16px at 30px 8px, rgba(120,190,255,.35) 30%, transparent 70%);
@@ -92,53 +127,17 @@
   }
   @keyframes waveSlide { to { transform: translateX(120px); } }
 
-  /* boat group bobs on the water */
   #boat-group {
-    position: absolute; left: 50%; bottom: 24%;
+    position: absolute; left: 50%; bottom: 17%;
     transform: translateX(-50%);
-    animation: bob 4.5s ease-in-out infinite;
+    animation: bob 4.6s ease-in-out infinite;
     z-index: 4;
   }
   @keyframes bob {
-    0%,100% { transform: translateX(-50%) translateY(0) rotate(-1.2deg); }
-    50%     { transform: translateX(-50%) translateY(12px) rotate(1.4deg); }
+    0%,100% { transform: translateX(-50%) translateY(0) rotate(-1.4deg); }
+    50%     { transform: translateX(-50%) translateY(13px) rotate(1.6deg); }
   }
-
-  /* the human — photo head on illustrated body */
-  #human {
-    position: absolute; left: 50%; bottom: 92px; transform: translateX(-50%);
-    display: flex; flex-direction: column; align-items: center;
-    z-index: 3;
-  }
-  #face {
-    width: 62px; height: 72px; border-radius: 46% 46% 42% 42%;
-    background: url('assets/face.jpg') center 28% / 155% auto no-repeat;
-    border: 2px solid rgba(255,255,255,.25);
-    box-shadow: 0 0 22px rgba(61,220,255,.35);
-  }
-  #body {
-    width: 54px; height: 78px; margin-top: -6px;
-    background: linear-gradient(180deg, #1c3a5e 0%, #142c49 100%);
-    border-radius: 16px 16px 8px 8px;
-    position: relative;
-  }
-  #body::before, #body::after { /* arms */
-    content: ''; position: absolute; top: 8px; width: 12px; height: 52px;
-    background: #163252; border-radius: 8px;
-  }
-  #body::before { left: -10px; transform: rotate(8deg); }
-  #body::after  { right: -10px; transform: rotate(-8deg); }
-
-  /* boat svg */
-  #boat-svg { display: block; }
-
-  #hull-logo-plate {
-    position: absolute; left: 50%; transform: translateX(-50%); bottom: 26px;
-    background: #fff; border-radius: 8px; padding: 5px 10px;
-    box-shadow: 0 2px 12px rgba(0,0,0,.5);
-    z-index: 5;
-  }
-  #hull-logo-plate img { display: block; height: 20px; width: auto; }
+  #boat-scene { display: block; width: min(560px, 88vw); height: auto; overflow: visible; }
 
   #skip-btn {
     position: fixed; right: 22px; bottom: 22px; z-index: 60;
@@ -150,11 +149,45 @@
   #skip-btn:hover { color: #fff; border-color: rgba(255,255,255,.5); }
 
   /* ════════════════════════════════════════════════════════
-     SCENE 2 — inside the brain: the neon map
+     SCENE 2 — the cartoon brain interstitial
+     ════════════════════════════════════════════════════════ */
+  #brain-intro {
+    background: radial-gradient(ellipse at 50% 45%, #140a26 0%, #090514 55%, #030208 100%);
+    z-index: 36;
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+    opacity: 0; transition: opacity .5s ease;
+  }
+  #brain-intro.show { opacity: 1; }
+  #brain-intro.burst #brain-svg-wrap { animation: brainBurst .65s cubic-bezier(.6,-0.1,.9,.4) forwards; }
+  #brain-intro.burst { transition: opacity .3s ease .45s; opacity: 0; }
+  @keyframes brainBurst {
+    0%   { transform: scale(1); filter: brightness(1); }
+    55%  { transform: scale(1.18); filter: brightness(1.7); }
+    100% { transform: scale(6); filter: brightness(4); opacity: 0; }
+  }
+  #brain-svg-wrap { animation: brainPulse 1.15s ease-in-out infinite; }
+  @keyframes brainPulse {
+    0%,100% { transform: scale(1); filter: drop-shadow(0 0 26px rgba(255,126,184,.45)); }
+    50%     { transform: scale(1.055); filter: drop-shadow(0 0 60px rgba(255,126,184,.85)); }
+  }
+  #brain-caption {
+    margin-top: 34px; text-align: center; letter-spacing: 2px;
+  }
+  #brain-caption .c1 { color: #ffb7d9; font-size: 15px; font-weight: 700; }
+  #brain-caption .c2 { color: #8d7bb8; font-size: 12px; margin-top: 8px; }
+  #brain-caption .c2 b { color: var(--amber); }
+  .zap { animation: zapFlick 1.3s infinite; transform-origin: center; }
+  @keyframes zapFlick {
+    0%, 100% { opacity: 0; } 12% { opacity: 1; } 22% { opacity: 0; }
+    54% { opacity: 0; } 62% { opacity: .9; } 72% { opacity: 0; }
+  }
+
+  /* ════════════════════════════════════════════════════════
+     SCENE 3 — the living neural network + login
      ════════════════════════════════════════════════════════ */
   #brain-stage {
-    background: radial-gradient(ellipse at 50% 40%, #0a0d24 0%, #05071a 55%, #020310 100%);
-    z-index: 30; opacity: 0; transition: opacity 1s ease;
+    background: radial-gradient(ellipse at 50% 40%, #0b0d28 0%, #05071c 55%, #020310 100%);
+    z-index: 30; opacity: 0; transition: opacity .9s ease;
   }
   #brain-stage.show { opacity: 1; }
 
@@ -177,7 +210,7 @@
   .stop-node.pop { animation: stopPop .5s cubic-bezier(.2,1.6,.4,1) forwards; }
   @keyframes stopPop { from { opacity: 0; transform: scale(.2); } to { opacity: 1; transform: scale(1); } }
 
-  /* ── login card ── */
+  /* login card */
   #login-card {
     position: absolute; left: 50%; top: 50%;
     transform: translate(-50%, -46%) scale(.96);
@@ -202,7 +235,6 @@
     60% { transform: translate(calc(-50% - 7px),-50%); }
     80% { transform: translate(calc(-50% + 5px),-50%); }
   }
-
   #login-card .lc-brand {
     font-size: 12px; letter-spacing: 5px; color: var(--cyan);
     text-shadow: 0 0 12px rgba(61,220,255,.7);
@@ -211,9 +243,7 @@
     margin-top: 10px; font-size: 26px; letter-spacing: 2px; color: #eef7ff;
     text-shadow: 0 0 18px rgba(61,220,255,.35);
   }
-  #login-card .lc-sub {
-    margin-top: 8px; font-size: 12.5px; color: #7f95b5; line-height: 1.6;
-  }
+  #login-card .lc-sub { margin-top: 8px; font-size: 12.5px; color: #7f95b5; line-height: 1.6; }
   #login-input {
     margin-top: 22px; width: 100%;
     background: rgba(2,6,20,.9);
@@ -224,7 +254,6 @@
   }
   #login-input:focus { border-color: var(--cyan); box-shadow: 0 0 18px rgba(61,220,255,.25); }
   #login-input::placeholder { color: #46587a; }
-
   #login-btn {
     margin-top: 14px; width: 100%;
     background: linear-gradient(90deg, #0e7490, #0891b2 45%, #06b6d4);
@@ -236,17 +265,11 @@
   }
   #login-btn:hover { transform: translateY(-1px); box-shadow: 0 0 34px rgba(6,182,212,.6); }
   #login-btn:active { transform: translateY(1px); }
-
-  #login-msg {
-    margin-top: 13px; min-height: 34px; font-size: 12.5px; line-height: 1.5;
-    color: var(--red);
-  }
-  #login-msg .guest-link {
-    color: var(--amber); cursor: pointer; text-decoration: underline;
-  }
+  #login-msg { margin-top: 13px; min-height: 34px; font-size: 12.5px; line-height: 1.5; color: var(--red); }
+  #login-msg .guest-link { color: var(--amber); cursor: pointer; text-decoration: underline; }
 
   /* ════════════════════════════════════════════════════════
-     SCENE 3 — the terminal (original KARAN.BRAIN)
+     SCENE 4 — the terminal (original KARAN.BRAIN)
      ════════════════════════════════════════════════════════ */
   #terminal-stage { background: var(--bg); z-index: 20; }
 
@@ -330,48 +353,239 @@
     #terminal { font-size: 12.5px; }
     #terminal-wrap { padding: 14px 12px 80px; }
     .stop-label { font-size: 11px; }
-    .moon { width: 52px; height: 52px; }
+    .moon { width: 56px; height: 56px; }
   }
 </style>
 </head>
 <body>
 
-<!-- ═══ SCENE 1: sea + boat ═══ -->
+<!-- ═══ SCENE 1: night sea + sailboat + cartoon Karan ═══ -->
 <div class="stage" id="intro-stage">
   <div class="moon"></div>
   <div id="stars"></div>
+  <div class="shooting-star"></div>
+  <div class="cloud" style="top:16%; width:120px; animation-duration: 85s;"></div>
+  <div class="cloud" style="top:27%; width:90px;  animation-duration: 110s; animation-delay:-40s;"></div>
   <div id="intro-title">
     <div class="t1">KARAN.BRAIN</div>
     <div class="t2">one brain is leaving the building. take a look inside before it sails.</div>
   </div>
   <div class="sea">
+    <div class="moonpath"></div>
     <div class="wave" style="top:6px"></div>
     <div class="wave" style="top:34px; animation-duration: 7s; opacity:.35"></div>
     <div class="wave" style="top:66px; animation-duration: 11s; opacity:.25"></div>
   </div>
+
   <div id="boat-group">
-    <div id="human">
-      <div id="face"></div>
-      <div id="body"></div>
-    </div>
-    <svg id="boat-svg" width="340" height="150" viewBox="0 0 340 150">
-      <!-- mast + flag -->
-      <rect x="256" y="6" width="5" height="84" fill="#20406b"/>
-      <path d="M261 8 L318 20 L261 34 Z" fill="#3ddcff" opacity=".9">
-        <animate attributeName="d"
-          values="M261 8 L318 20 L261 34 Z; M261 8 L312 16 L261 34 Z; M261 8 L318 20 L261 34 Z"
-          dur="2.2s" repeatCount="indefinite"/>
+    <svg id="boat-scene" viewBox="0 -160 460 350">
+      <defs>
+        <linearGradient id="hullGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#26507f"/>
+          <stop offset=".5" stop-color="#173a63"/>
+          <stop offset="1" stop-color="#0d2444"/>
+        </linearGradient>
+        <linearGradient id="sailGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#ffffff"/>
+          <stop offset="1" stop-color="#d9e8fa"/>
+        </linearGradient>
+        <clipPath id="torsoClip">
+          <path d="M62 174 Q66 158 86 153 L102 149 H118 L134 153 Q154 158 158 174 L162 228 Q138 238 110 238 Q82 238 58 228 Z"/>
+        </clipPath>
+      </defs>
+
+      <!-- ══ SAILS + MAST ══ -->
+      <rect x="326" y="-128" width="6" height="190" rx="3" fill="#20406b"/>
+      <rect x="332" y="-10" width="86" height="5" rx="2.5" fill="#20406b"/>
+      <!-- main sail (billowing) -->
+      <path fill="url(#sailGrad)" stroke="#b8cde6" stroke-width="1.5" d="M336 -122 L336 -14 L416 -14 Z">
+        <animate attributeName="d" dur="3.4s" repeatCount="indefinite"
+          values="M336 -122 L336 -14 L416 -14 Z;
+                  M336 -122 Q366 -66 344 -14 L416 -14 Z;
+                  M336 -122 L336 -14 L416 -14 Z"/>
       </path>
-      <!-- hull -->
-      <path d="M12 92 L328 92 L296 144 Q170 156 44 144 Z" fill="#132c4d" stroke="#2a537f" stroke-width="3"/>
-      <path d="M12 92 L328 92 L322 104 L18 104 Z" fill="#1d426d"/>
+      <!-- jib sail -->
+      <path fill="#c7dcf4" opacity=".9" stroke="#a9c2de" stroke-width="1.2" d="M322 -112 L322 -18 L254 -18 Z">
+        <animate attributeName="d" dur="2.9s" repeatCount="indefinite"
+          values="M322 -112 L322 -18 L254 -18 Z;
+                  M322 -112 Q300 -62 318 -18 L254 -18 Z;
+                  M322 -112 L322 -18 L254 -18 Z"/>
+      </path>
+      <!-- pennant -->
+      <path fill="#3ddcff" d="M332 -130 L364 -122 L332 -114 Z">
+        <animate attributeName="d" dur="1.9s" repeatCount="indefinite"
+          values="M332 -130 L364 -122 L332 -114 Z; M332 -130 L358 -125 L332 -114 Z; M332 -130 L364 -122 L332 -114 Z"/>
+      </path>
+
+      <!-- ══ CARTOON KARAN (feet land on deck) ══ -->
+      <g id="char" transform="translate(96,-124) scale(0.63)">
+        <!-- legs -->
+        <path d="M86 236 L86 284 Q86 290 92 290 L100 290 Q105 290 105 284 L106 240 Z" fill="#22304d"/>
+        <path d="M116 240 L117 284 Q117 290 122 290 L130 290 Q136 290 136 284 L136 236 Z" fill="#22304d"/>
+        <!-- shoes -->
+        <path d="M78 288 Q78 282 88 282 L102 282 Q108 282 108 289 Q108 295 100 295 L84 295 Q78 295 78 288 Z" fill="#f2f5f9"/>
+        <path d="M114 289 Q114 282 120 282 L134 282 Q144 282 144 288 Q144 295 138 295 L122 295 Q114 295 114 289 Z" fill="#f2f5f9"/>
+        <rect x="78" y="291" width="30" height="4" rx="2" fill="#c9d4e2"/>
+        <rect x="114" y="291" width="30" height="4" rx="2" fill="#c9d4e2"/>
+
+        <!-- torso: striped shirt over a gym build -->
+        <path d="M62 174 Q66 158 86 153 L102 149 H118 L134 153 Q154 158 158 174 L162 228 Q138 238 110 238 Q82 238 58 228 Z" fill="#f2f7fb"/>
+        <g clip-path="url(#torsoClip)" stroke="#9cc4e4" stroke-width="5">
+          <line x1="70" y1="145" x2="70" y2="242"/>
+          <line x1="84" y1="145" x2="84" y2="242"/>
+          <line x1="98" y1="145" x2="98" y2="242"/>
+          <line x1="112" y1="145" x2="112" y2="242"/>
+          <line x1="126" y1="145" x2="126" y2="242"/>
+          <line x1="140" y1="145" x2="140" y2="242"/>
+          <line x1="154" y1="145" x2="154" y2="242"/>
+        </g>
+        <!-- collar -->
+        <path d="M96 150 L110 163 L124 150 L118 148 L110 156 L102 148 Z" fill="#dbe7f2"/>
+        <!-- pecs hint -->
+        <path d="M84 184 Q97 192 108 185 M112 185 Q123 192 136 184" stroke="#d6e2ee" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+        <!-- left arm: hand on hip -->
+        <path d="M66 160 Q52 168 50 190 Q49 204 62 210 L74 214 L78 202 L68 197 Q64 188 68 174 Z" fill="#f2f7fb"/>
+        <circle cx="74" cy="208" r="8.5" fill="#c98a5e"/>
+
+        <!-- right arm: waving goodbye (bare muscular arm, short sleeve) -->
+        <g id="wave-arm">
+          <path d="M150 158 Q168 150 178 128 Q186 112 184 100 L170 96 Q170 112 162 126 Q154 140 144 146 Z" fill="#c98a5e"/>
+          <path d="M142 148 Q156 142 164 128 L176 138 Q166 152 152 162 Z" fill="#f2f7fb"/>
+          <circle cx="177" cy="94" r="11" fill="#c98a5e"/>
+          <path d="M170 87 L169 80 M176 85 L176 77 M182 87 L184 79" stroke="#c98a5e" stroke-width="5" stroke-linecap="round"/>
+          <animateTransform attributeName="transform" type="rotate"
+            values="-10 150 156; 12 150 156; -10 150 156" dur="1.15s" repeatCount="indefinite"/>
+        </g>
+
+        <!-- neck -->
+        <rect x="100" y="130" width="20" height="24" rx="7" fill="#b97f55"/>
+
+        <!-- HEAD -->
+        <g id="head">
+          <!-- ears -->
+          <circle cx="69" cy="88" r="8" fill="#c98a5e"/>
+          <circle cx="151" cy="88" r="8" fill="#c98a5e"/>
+          <!-- face -->
+          <path d="M70 76 Q70 32 110 32 Q150 32 150 76 Q150 106 138 122 Q124 138 110 138 Q96 138 82 122 Q70 106 70 76 Z" fill="#c98a5e"/>
+          <!-- full beard: solid mass hugging the jaw, high on the cheeks -->
+          <ellipse cx="110" cy="110" rx="42" ry="45" fill="#1b1613"/>
+          <!-- mouth window carved back out of the beard -->
+          <rect x="92" y="102" width="36" height="22" rx="10" fill="#c98a5e"/>
+          <!-- mustache over the mouth window -->
+          <path d="M88 104 Q110 95 132 104 Q126 113 110 111 Q94 113 88 104 Z" fill="#1b1613"/>
+          <path d="M101 119 Q110 124 119 119" stroke="#8a4b32" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+          <!-- nose -->
+          <path d="M110 86 Q114 96 110 101 Q107 103 105 100" stroke="#b3714a" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+          <!-- chrome wraparound sunglasses -->
+          <g id="shades">
+            <path d="M70 76 Q110 66 150 76 L150 84 Q110 74 70 84 Z" fill="#cfd6dd"/>
+            <ellipse cx="92" cy="82" rx="17.5" ry="11.5" fill="#14181d" stroke="#cfd6dd" stroke-width="3.4"/>
+            <ellipse cx="128" cy="82" rx="17.5" ry="11.5" fill="#14181d" stroke="#cfd6dd" stroke-width="3.4"/>
+            <path d="M108 80 Q110 76 112 80" stroke="#cfd6dd" stroke-width="4" fill="none"/>
+            <ellipse cx="86" cy="78" rx="5.5" ry="2.4" fill="#ffffff" opacity=".75" transform="rotate(-14 86 78)">
+              <animate attributeName="opacity" values=".15;.85;.15" dur="2.6s" repeatCount="indefinite"/>
+            </ellipse>
+            <ellipse cx="122" cy="78" rx="4.5" ry="2" fill="#ffffff" opacity=".55" transform="rotate(-14 122 78)">
+              <animate attributeName="opacity" values=".1;.6;.1" dur="2.6s" begin=".4s" repeatCount="indefinite"/>
+            </ellipse>
+          </g>
+          <!-- brows above shades -->
+          <path d="M78 66 Q90 60 102 65" stroke="#1b1613" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M118 65 Q130 60 142 66" stroke="#1b1613" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <!-- curly hair -->
+          <g fill="#191512">
+            <circle cx="80" cy="48" r="15"/>
+            <circle cx="97" cy="38" r="16"/>
+            <circle cx="115" cy="34" r="16"/>
+            <circle cx="132" cy="40" r="15"/>
+            <circle cx="145" cy="52" r="13"/>
+            <circle cx="70" cy="60" r="12"/>
+            <circle cx="150" cy="64" r="11"/>
+            <circle cx="88" cy="44" r="12"/>
+            <circle cx="124" cy="36" r="12"/>
+            <circle cx="106" cy="40" r="13"/>
+            <!-- curl texture -->
+            <circle cx="76" cy="52" r="5" fill="#2b2420"/>
+            <circle cx="95" cy="41" r="5" fill="#2b2420"/>
+            <circle cx="113" cy="37" r="5" fill="#2b2420"/>
+            <circle cx="131" cy="44" r="5" fill="#2b2420"/>
+            <circle cx="144" cy="57" r="4" fill="#2b2420"/>
+          </g>
+        </g>
+      </g>
+
+      <!-- ══ HULL (drawn after character so he stands *in* the boat) ══ -->
+      <path d="M18 64 L442 64 Q436 92 402 128 Q376 154 326 160 L134 160 Q84 154 58 128 Q24 92 18 64 Z"
+            fill="url(#hullGrad)" stroke="#2a537f" stroke-width="3"/>
+      <path d="M18 64 L442 64 L436 78 L24 78 Z" fill="#2a537f"/>
+      <path d="M26 84 L434 84" stroke="#d9b45b" stroke-width="2.5" opacity=".85"/>
+      <circle cx="150" cy="108" r="7.5" fill="#9fd8ff" stroke="#2a537f" stroke-width="2.5"/>
+      <circle cx="230" cy="112" r="7.5" fill="#9fd8ff" stroke="#2a537f" stroke-width="2.5"/>
+      <circle cx="310" cy="108" r="7.5" fill="#9fd8ff" stroke="#2a537f" stroke-width="2.5"/>
+      <!-- logo plate -->
+      <rect x="168" y="122" width="124" height="30" rx="8" fill="#ffffff"/>
+      <image href="assets/rapidshyp-logo.svg" x="176" y="128" width="108" height="18"/>
+      <!-- wake foam -->
+      <path d="M30 150 Q60 144 92 152" stroke="#bfe3ff" stroke-width="3" fill="none" opacity=".5" stroke-linecap="round">
+        <animate attributeName="opacity" values=".2;.6;.2" dur="2.4s" repeatCount="indefinite"/>
+      </path>
+      <path d="M368 154 Q404 146 432 138" stroke="#bfe3ff" stroke-width="3" fill="none" opacity=".4" stroke-linecap="round">
+        <animate attributeName="opacity" values=".5;.15;.5" dur="2.8s" repeatCount="indefinite"/>
+      </path>
     </svg>
-    <div id="hull-logo-plate"><img src="assets/rapidshyp-logo.svg" alt="RapidShyp"></div>
   </div>
   <button id="skip-btn">SKIP INTRO ▸▸</button>
 </div>
 
-<!-- ═══ SCENE 2: brain map + login ═══ -->
+<!-- ═══ SCENE 2: cartoon brain ═══ -->
+<div class="stage hidden-stage" id="brain-intro">
+  <div id="brain-svg-wrap">
+    <svg width="min(340px,72vw)" viewBox="0 0 240 200">
+      <defs>
+        <radialGradient id="brainGrad" cx=".38" cy=".32" r="1">
+          <stop offset="0" stop-color="#ffb9d9"/>
+          <stop offset=".55" stop-color="#ff8fc2"/>
+          <stop offset="1" stop-color="#e2619e"/>
+        </radialGradient>
+      </defs>
+      <!-- stem + cerebellum -->
+      <path d="M136 160 L150 184 L120 184 Z" fill="#d1568f"/>
+      <path d="M146 146 Q170 138 188 148 Q184 168 158 170 Q146 162 146 146 Z" fill="#e8709f" stroke="#c44b82" stroke-width="2.5"/>
+      <path d="M152 152 Q160 148 168 152 M154 160 Q162 156 172 160" stroke="#c44b82" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <!-- hemispheres -->
+      <path d="M118 24 Q158 12 184 36 Q210 58 204 92 Q216 110 198 130 Q188 158 152 158 Q134 170 118 162
+               Q96 172 78 156 Q46 154 38 126 Q22 106 34 88 Q30 54 58 36 Q86 14 118 24 Z"
+            fill="url(#brainGrad)" stroke="#c44b82" stroke-width="3.5"/>
+      <!-- central fissure -->
+      <path d="M119 26 Q114 60 119 96 Q123 130 118 160" stroke="#d1568f" stroke-width="3" fill="none"/>
+      <!-- folds -->
+      <g stroke="#d1568f" stroke-width="2.6" fill="none" stroke-linecap="round">
+        <path d="M56 62 Q76 50 94 64"/>
+        <path d="M44 94 Q66 82 86 96"/>
+        <path d="M54 124 Q74 112 94 126"/>
+        <path d="M78 44 Q94 36 106 46"/>
+        <path d="M144 62 Q164 50 182 64"/>
+        <path d="M152 94 Q174 82 192 96"/>
+        <path d="M146 124 Q166 112 184 126"/>
+        <path d="M132 44 Q146 36 158 46"/>
+      </g>
+      <!-- electric zaps -->
+      <g stroke="#ffe45c" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path class="zap" d="M20 40 L34 46 L26 54 L40 62" style="animation-delay:0s"/>
+        <path class="zap" d="M216 52 L204 60 L214 66 L202 76" style="animation-delay:.45s"/>
+        <path class="zap" d="M18 140 L32 144 L24 152 L38 158" style="animation-delay:.8s"/>
+        <path class="zap" d="M222 128 L208 134 L218 142 L204 150" style="animation-delay:.25s"/>
+      </g>
+    </svg>
+  </div>
+  <div id="brain-caption">
+    <div class="c1">ENTERING KARAN.BRAIN</div>
+    <div class="c2">neural activity detected: <b>EXTREME</b> · all sectors firing at once</div>
+  </div>
+</div>
+
+<!-- ═══ SCENE 3: neural network + login ═══ -->
 <div class="stage hidden-stage" id="brain-stage">
   <svg id="brain-map" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
     <defs>
@@ -386,33 +600,20 @@
     </defs>
 
     <!-- faint brain folds -->
-    <g stroke="#16214d" stroke-width="26" fill="none" opacity=".55" stroke-linecap="round">
+    <g stroke="#16214d" stroke-width="26" fill="none" opacity=".5" stroke-linecap="round">
       <path d="M90 210 Q240 90 430 160 Q600 220 760 130 Q930 60 1110 170"/>
       <path d="M60 430 Q220 330 420 400 Q640 480 830 380 Q1000 300 1150 400"/>
       <path d="M120 640 Q300 540 520 620 Q740 700 930 600 Q1070 530 1170 620"/>
     </g>
-    <!-- faint street grid -->
-    <g stroke="#0e1636" stroke-width="1.5" opacity=".8">
-      <path d="M0 160 H1200 M0 320 H1200 M0 480 H1200 M0 640 H1200"/>
-      <path d="M150 0 V800 M340 0 V800 M530 0 V800 M720 0 V800 M910 0 V800 M1080 0 V800"/>
-    </g>
 
-    <!-- the route -->
-    <path id="route-glow" fill="none" stroke="#3ddcff" stroke-width="7" opacity=".22" filter="url(#bigglow)"
-      d="M60 700 Q150 620 240 640 Q340 660 360 560 Q375 480 300 430 Q220 380 300 310 Q380 245 500 290 Q610 330 660 250 Q705 180 810 200 Q910 220 930 320 Q945 400 860 450 Q780 495 850 570 Q915 635 1030 600 Q1120 570 1150 480"/>
-    <path id="route" fill="none" stroke="#7de6ff" stroke-width="2.6" stroke-dasharray="3 9" stroke-linecap="round" filter="url(#glow)"
+    <!-- layout spine (invisible): neuron positions are sampled from it -->
+    <path id="route" fill="none" stroke="none"
       d="M60 700 Q150 620 240 640 Q340 660 360 560 Q375 480 300 430 Q220 380 300 310 Q380 245 500 290 Q610 330 660 250 Q705 180 810 200 Q910 220 930 320 Q945 400 860 450 Q780 495 850 570 Q915 635 1030 600 Q1120 570 1150 480"/>
 
+    <g id="bg-neurons"></g>
+    <g id="edges"></g>
+    <g id="pulses"></g>
     <g id="stops"></g>
-
-    <!-- the runner agent -->
-    <g id="runner" filter="url(#bigglow)">
-      <circle r="7" fill="#3ddcff" opacity=".35"/>
-      <circle r="3.6" fill="#d9f7ff"/>
-      <animateMotion dur="26s" repeatCount="indefinite" rotate="none">
-        <mpath href="#route"/>
-      </animateMotion>
-    </g>
   </svg>
 
   <div id="login-card">
@@ -425,7 +626,7 @@
   </div>
 </div>
 
-<!-- ═══ SCENE 3: terminal ═══ -->
+<!-- ═══ SCENE 4: terminal ═══ -->
 <div class="stage hidden-stage crt-fx" id="terminal-stage">
   <div id="terminal-wrap">
     <div id="terminal">
@@ -465,9 +666,10 @@ const ADVICE = [
 ];
 
 // ════════════════════════════════════════════════════════════
-// SCENE 1+2 — intro timeline, brain map, login
+// SCENES 1-3 — intro timeline, neural network, login
 // ════════════════════════════════════════════════════════════
 const introStage = document.getElementById('intro-stage');
+const brainIntro = document.getElementById('brain-intro');
 const brainStage = document.getElementById('brain-stage');
 const termStage  = document.getElementById('terminal-stage');
 const loginCard  = document.getElementById('login-card');
@@ -475,11 +677,12 @@ const loginInput = document.getElementById('login-input');
 const loginBtn   = document.getElementById('login-btn');
 const loginMsg   = document.getElementById('login-msg');
 const skipBtn    = document.getElementById('skip-btn');
+const SVG_NS = 'http://www.w3.org/2000/svg';
 
 // stars
 (function makeStars() {
   const holder = document.getElementById('stars');
-  for (let i = 0; i < 70; i++) {
+  for (let i = 0; i < 80; i++) {
     const s = document.createElement('div');
     s.className = 'star';
     const size = Math.random() * 2.2 + 0.6;
@@ -492,7 +695,7 @@ const skipBtn    = document.getElementById('skip-btn');
   }
 })();
 
-// brain map stops
+// ── the 13 neurons of Karan's brain ─────────────────────────
 const STOPS = [
   { at: 0.030, label: 'GYM',            icon: '🏋️', color: '#7dff66' },
   { at: 0.105, label: 'SWIMMING',       icon: '🏊', color: '#3ddcff' },
@@ -509,64 +712,202 @@ const STOPS = [
   { at: 0.960, label: 'CAFFEINE SHOP',  icon: '☕', color: '#ffb000' },
 ];
 
-function buildStops() {
+// chain + cross-links so signals visibly criss-cross the whole brain
+const LINKS = [
+  [0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7],[7,8],[8,9],[9,10],[10,11],[11,12],
+  [0,2],[1,3],[2,4],[3,5],[4,6],[5,7],[6,8],[7,9],[8,10],[9,11],[10,12],[0,3],[4,8]
+];
+
+const neurons = [];   // {x, y, color, somaEl, ringEl, coreEl}
+const edges = [];     // {el, len, a, b}
+
+function buildNetwork() {
   const route = document.getElementById('route');
-  const holder = document.getElementById('stops');
   const total = route.getTotalLength();
-  STOPS.forEach((s, i) => {
+  const stopsG = document.getElementById('stops');
+  const edgesG = document.getElementById('edges');
+  const bgG = document.getElementById('bg-neurons');
+
+  // neuron positions from the layout spine
+  STOPS.forEach((s) => {
     const p = route.getPointAtLength(total * s.at);
-    // outer <g> owns the position (attribute transform); inner <g> owns the
-    // pop animation (CSS transform) — CSS transform overrides the attribute,
-    // so they must live on different elements.
-    const outer = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    outer.setAttribute('transform', `translate(${p.x}, ${p.y})`);
-    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    neurons.push({ x: p.x, y: p.y, color: s.color });
+  });
+
+  // ambient background micro-neurons
+  for (let i = 0; i < 46; i++) {
+    const c = document.createElementNS(SVG_NS, 'circle');
+    c.setAttribute('cx', Math.random() * 1200);
+    c.setAttribute('cy', Math.random() * 800);
+    c.setAttribute('r', Math.random() * 1.8 + 0.7);
+    c.setAttribute('fill', ['#3ddcff','#ff66cc','#7dff66','#a78bfa'][i % 4]);
+    c.setAttribute('opacity', '0');
+    const a = document.createElementNS(SVG_NS, 'animate');
+    a.setAttribute('attributeName', 'opacity');
+    a.setAttribute('values', `0;${(0.12 + Math.random() * 0.3).toFixed(2)};0`);
+    a.setAttribute('dur', (1.2 + Math.random() * 2.6).toFixed(2) + 's');
+    a.setAttribute('begin', (Math.random() * 3).toFixed(2) + 's');
+    a.setAttribute('repeatCount', 'indefinite');
+    c.appendChild(a);
+    bgG.appendChild(c);
+  }
+
+  // axon edges: curved beziers between linked neurons
+  LINKS.forEach(([a, b], idx) => {
+    const A = neurons[a], B = neurons[b];
+    const mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2;
+    const dx = B.x - A.x, dy = B.y - A.y;
+    const dist = Math.hypot(dx, dy) || 1;
+    const bend = (idx % 2 ? 1 : -1) * Math.min(70, dist * 0.22);
+    const cx = mx - (dy / dist) * bend;
+    const cy = my + (dx / dist) * bend;
+    const path = document.createElementNS(SVG_NS, 'path');
+    path.setAttribute('d', `M ${A.x} ${A.y} Q ${cx} ${cy} ${B.x} ${B.y}`);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', '#3d5db0');
+    path.setAttribute('stroke-width', '1.4');
+    path.setAttribute('opacity', '0');
+    edgesG.appendChild(path);
+    edges.push({ el: path, len: path.getTotalLength(), a, b });
+  });
+
+  // labeled neurons with dendrites
+  STOPS.forEach((s, i) => {
+    const n = neurons[i];
+    const outer = document.createElementNS(SVG_NS, 'g');
+    outer.setAttribute('transform', `translate(${n.x}, ${n.y})`);
+    const g = document.createElementNS(SVG_NS, 'g');
     g.setAttribute('class', 'stop-node');
     const above = i % 2 === 0;
-    const labelY = above ? -34 : 46;
-    const iconY  = above ? -16 : 30;
+    const labelY = above ? -36 : 48;
+    const iconY  = above ? -18 : 32;
+    // dendrite twigs
+    let dendrites = '';
+    for (let d = 0; d < 5; d++) {
+      const ang = (d / 5) * Math.PI * 2 + i;
+      const x1 = Math.cos(ang) * 8, y1 = Math.sin(ang) * 8;
+      const x2 = Math.cos(ang) * 17, y2 = Math.sin(ang) * 17;
+      const x3 = Math.cos(ang + 0.35) * 22, y3 = Math.sin(ang + 0.35) * 22;
+      dendrites += `<path d="M ${x1} ${y1} L ${x2} ${y2} M ${x2} ${y2} L ${x3} ${y3}" stroke="${s.color}" stroke-width="1.3" opacity=".5" fill="none"/>`;
+    }
     g.innerHTML = `
-      <circle r="10" fill="${s.color}" opacity=".18" filter="url(#bigglow)"/>
-      <circle r="5.5" fill="${s.color}" filter="url(#glow)"/>
-      <circle r="2.2" fill="#fff"/>
+      ${dendrites}
+      <circle class="n-halo" r="11" fill="${s.color}" opacity=".16" filter="url(#bigglow)"/>
+      <circle class="n-ring" r="7" fill="none" stroke="${s.color}" stroke-width="2" opacity="0"/>
+      <circle class="n-soma" r="6" fill="${s.color}" filter="url(#glow)"/>
+      <circle class="n-core" r="2.3" fill="#fff"/>
       <text y="${iconY}" text-anchor="middle" font-size="15" style="pointer-events:none">${s.icon}</text>
       <text class="stop-label" y="${labelY}" text-anchor="middle" fill="${s.color}">${s.label}</text>
     `;
     outer.appendChild(g);
-    holder.appendChild(outer);
+    stopsG.appendChild(outer);
+    n.somaEl = g.querySelector('.n-soma');
+    n.ringEl = g.querySelector('.n-ring');
+    n.coreEl = g.querySelector('.n-core');
+    n.nodeEl = g;
   });
 }
 
-// route draw-in
-function prepRouteDraw() {
-  const route = document.getElementById('route');
-  const len = route.getTotalLength();
-  route.style.strokeDasharray = len + ' ' + len;
-  route.style.strokeDashoffset = len;
-}
-function drawRoute(ms) {
-  const route = document.getElementById('route');
-  route.style.transition = `stroke-dashoffset ${ms}ms ease-in-out`;
-  route.style.strokeDashoffset = '0';
-  setTimeout(() => {
-    // restore the dotted look after draw-in
-    route.style.transition = 'none';
-    route.style.strokeDasharray = '3 9';
-    route.style.strokeDashoffset = '0';
-  }, ms + 60);
+function fireNeuron(i) {
+  const n = neurons[i];
+  if (!n || !n.ringEl || typeof n.ringEl.animate !== 'function') return;
+  n.ringEl.animate(
+    [ { opacity: .9, r: 7 }, { opacity: 0, r: 30 } ],
+    { duration: 620, easing: 'ease-out' }
+  );
+  n.somaEl.animate(
+    [ { r: 6 }, { r: 9.5, filter: 'brightness(1.9)' }, { r: 6 } ],
+    { duration: 360, easing: 'ease-out' }
+  );
+  n.coreEl.animate(
+    [ { r: 2.3 }, { r: 4.4 }, { r: 2.3 } ],
+    { duration: 360, easing: 'ease-out' }
+  );
 }
 
+// ── pulse engine: signals racing along axons, all at once ───
+let pulsesRunning = false;
+let activePulses = 0;
+
+function spawnPulse() {
+  if (activePulses > 30 || document.hidden) return;
+  const e = edges[Math.floor(Math.random() * edges.length)];
+  if (!e) return;
+  const forward = Math.random() > 0.5;
+  const target = forward ? e.b : e.a;
+  const color = neurons[target].color;
+  const dot = document.createElementNS(SVG_NS, 'circle');
+  dot.setAttribute('r', 2.8);
+  dot.setAttribute('fill', '#ffffff');
+  dot.setAttribute('filter', 'url(#glow)');
+  const trail = document.createElementNS(SVG_NS, 'circle');
+  trail.setAttribute('r', 4.5);
+  trail.setAttribute('fill', color);
+  trail.setAttribute('opacity', '.4');
+  const holder = document.getElementById('pulses');
+  holder.appendChild(trail);
+  holder.appendChild(dot);
+  activePulses++;
+
+  const dur = 420 + Math.random() * 620;
+  const start = performance.now();
+  function step(now) {
+    const t = Math.min(1, (now - start) / dur);
+    const L = forward ? t * e.len : (1 - t) * e.len;
+    const p = e.el.getPointAtLength(L);
+    dot.setAttribute('cx', p.x); dot.setAttribute('cy', p.y);
+    const Lt = forward ? Math.max(0, L - 10) : Math.min(e.len, L + 10);
+    const pt = e.el.getPointAtLength(Lt);
+    trail.setAttribute('cx', pt.x); trail.setAttribute('cy', pt.y);
+    if (t < 1) requestAnimationFrame(step);
+    else {
+      dot.remove(); trail.remove();
+      activePulses--;
+      if (Math.random() > 0.35) fireNeuron(target);
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+function startPulses() {
+  if (pulsesRunning) return;
+  pulsesRunning = true;
+  // heavy traffic: a new signal every ~90ms
+  setInterval(spawnPulse, 90);
+  // ambient self-firing so every neuron stays busy
+  neurons.forEach((n, i) => {
+    (function loop() {
+      setTimeout(() => { if (!document.hidden) fireNeuron(i); loop(); }, 1400 + Math.random() * 3200);
+    })();
+  });
+}
+
+// ── intro timeline ──────────────────────────────────────────
 let introDone = false;
 const introTimers = [];
 
-function stageBrainReveal() {
+function revealEdges(fast) {
+  edges.forEach((e, i) => {
+    const el = e.el;
+    el.style.strokeDasharray = e.len + ' ' + e.len;
+    el.style.strokeDashoffset = e.len;
+    el.setAttribute('opacity', '.5');
+    const delay = fast ? i * 14 : 120 + i * 55;
+    introTimers.push(setTimeout(() => {
+      el.style.transition = `stroke-dashoffset ${fast ? 300 : 700}ms ease-out`;
+      el.style.strokeDashoffset = '0';
+    }, delay));
+  });
+}
+
+function stageNetworkReveal(fast) {
   brainStage.classList.remove('hidden-stage');
   requestAnimationFrame(() => brainStage.classList.add('show'));
-  prepRouteDraw();
-  drawRoute(1800);
+  revealEdges(fast);
   document.querySelectorAll('.stop-node').forEach((n, i) => {
-    introTimers.push(setTimeout(() => n.classList.add('pop'), 350 + i * 130));
+    introTimers.push(setTimeout(() => n.classList.add('pop'), (fast ? 60 : 400) + i * (fast ? 40 : 110)));
   });
+  introTimers.push(setTimeout(startPulses, fast ? 500 : 1400));
 }
 
 function stageLoginReveal() {
@@ -577,25 +918,26 @@ function stageLoginReveal() {
 }
 
 function runIntro() {
-  buildStops();
+  buildNetwork();
   introTimers.push(setTimeout(() => document.getElementById('intro-title').classList.add('show'), 900));
-  introTimers.push(setTimeout(() => introStage.classList.add('zooming'), 3800));
-  introTimers.push(setTimeout(() => stageBrainReveal(), 4700));
-  introTimers.push(setTimeout(() => introStage.classList.add('gone'), 6400));
-  introTimers.push(setTimeout(() => stageLoginReveal(), 8600));
+  introTimers.push(setTimeout(() => introStage.classList.add('zooming'), 4200));
+  introTimers.push(setTimeout(() => {
+    brainIntro.classList.remove('hidden-stage');
+    requestAnimationFrame(() => brainIntro.classList.add('show'));
+  }, 5300));
+  introTimers.push(setTimeout(() => introStage.classList.add('gone'), 6600));
+  introTimers.push(setTimeout(() => brainIntro.classList.add('burst'), 8100));
+  introTimers.push(setTimeout(() => stageNetworkReveal(false), 8250));
+  introTimers.push(setTimeout(() => brainIntro.classList.add('hidden-stage'), 8900));
+  introTimers.push(setTimeout(() => stageLoginReveal(), 10300));
 }
 
 function skipIntro() {
   if (introDone) return;
   introTimers.forEach(clearTimeout);
-  introStage.classList.add('zooming');
-  introStage.classList.add('gone');
-  if (brainStage.classList.contains('hidden-stage')) {
-    brainStage.classList.remove('hidden-stage');
-    brainStage.classList.add('show');
-    prepRouteDraw();
-    drawRoute(600);
-  }
+  introStage.classList.add('zooming', 'gone');
+  brainIntro.classList.add('hidden-stage');
+  if (brainStage.classList.contains('hidden-stage')) stageNetworkReveal(true);
   document.querySelectorAll('.stop-node').forEach(n => n.classList.add('pop'));
   stageLoginReveal();
 }
@@ -617,19 +959,17 @@ function tryLogin() {
   const val = loginInput.value.trim();
   if (!val) { loginCard.classList.add('shake'); setTimeout(()=>loginCard.classList.remove('shake'), 500); return; }
   const key = findUser(val);
-  if (!key || key === 'guest' && val.toLowerCase() !== 'guest') {
-    if (!key) {
-      loginFails++;
-      loginCard.classList.add('shake');
-      setTimeout(() => loginCard.classList.remove('shake'), 500);
-      if (loginFails >= 2) {
-        loginMsg.innerHTML = `No neural record found for '<b>${val.replace(/</g,'&lt;')}</b>'.<br>Try your first name — or <span class="guest-link" id="guest-link">slip in as guest →</span>`;
-        document.getElementById('guest-link').addEventListener('click', () => enterBrain('guest'));
-      } else {
-        loginMsg.textContent = `Access denied — Karan's brain has no record of '${val}'. Try your first name.`;
-      }
-      return;
+  if (!key) {
+    loginFails++;
+    loginCard.classList.add('shake');
+    setTimeout(() => loginCard.classList.remove('shake'), 500);
+    if (loginFails >= 2) {
+      loginMsg.innerHTML = `No neural record found for '<b>${val.replace(/</g,'&lt;')}</b>'.<br>Try your first name — or <span class="guest-link" id="guest-link">slip in as guest →</span>`;
+      document.getElementById('guest-link').addEventListener('click', () => enterBrain('guest'));
+    } else {
+      loginMsg.textContent = `Access denied — Karan's brain has no record of '${val}'. Try your first name.`;
     }
+    return;
   }
   enterBrain(key);
 }
@@ -651,7 +991,7 @@ function enterBrain(key) {
 }
 
 // ════════════════════════════════════════════════════════════
-// SCENE 3 — Terminal engine (original KARAN.BRAIN)
+// SCENE 4 — Terminal engine (original KARAN.BRAIN)
 // ════════════════════════════════════════════════════════════
 const output   = document.getElementById('output');
 const wrap     = document.getElementById('terminal-wrap');
