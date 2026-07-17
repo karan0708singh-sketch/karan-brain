@@ -39,9 +39,10 @@
     background: linear-gradient(180deg, #010210 0%, #04061f 30%, #0a1238 58%, #14205a 100%);
     z-index: 40;
     overflow: hidden;
+    transform-origin: 45% 44%;   /* the character's head — the zoom dives into it */
     transition: transform 2.1s cubic-bezier(.75,.02,.98,.4), opacity .45s ease 1.75s;
   }
-  #intro-stage.zooming { transform: scale(19); opacity: 0; pointer-events: none; }
+  #intro-stage.zooming { transform: scale(22); opacity: 0; pointer-events: none; }
   #intro-stage.gone { display: none; }
 
   .star {
@@ -149,7 +150,57 @@
   #skip-btn:hover { color: #fff; border-color: rgba(255,255,255,.5); }
 
   /* ════════════════════════════════════════════════════════
-     SCENE 2 — the cartoon brain interstitial
+     SCENE 2a — cranial scan
+     ════════════════════════════════════════════════════════ */
+  #scan-stage {
+    background: radial-gradient(ellipse at 50% 45%, #04121e 0%, #020a12 60%, #010508 100%);
+    z-index: 38;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity .45s ease;
+    overflow: hidden;
+  }
+  #scan-stage.show { opacity: 1; }
+  #scan-stage.out { opacity: 0; }
+
+  #scan-grid {
+    position: absolute; inset: 0; opacity: .55;
+    background-image:
+      linear-gradient(rgba(53,224,255,.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(53,224,255,.055) 1px, transparent 1px);
+    background-size: 46px 46px;
+  }
+  #scan-head-wrap { position: relative; }
+  #scan-band {
+    position: absolute; left: -12%; right: -12%; height: 74px;
+    background: linear-gradient(180deg, transparent, rgba(53,224,255,.22) 40%, rgba(160,244,255,.5) 50%, rgba(53,224,255,.22) 60%, transparent);
+    box-shadow: 0 0 30px rgba(53,224,255,.35);
+    animation: scanSweep 1.7s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes scanSweep {
+    0%   { top: -8%; }
+    50%  { top: 96%; }
+    100% { top: -8%; }
+  }
+  .hud {
+    position: absolute; font-size: 12px; letter-spacing: 2px; color: #49d7f2;
+    text-shadow: 0 0 10px rgba(53,224,255,.6);
+  }
+  #hud-tl { top: 26px; left: 28px; }
+  #hud-tr { top: 26px; right: 28px; font-size: 30px; font-weight: 700; }
+  #hud-bl { bottom: 30px; left: 28px; line-height: 1.9; color: #2e8fa6; }
+  #hud-bl .ok { color: #49d7f2; }
+  #hud-rec { bottom: 30px; right: 28px; color: #ff5f6e; }
+  #hud-rec::before { content: '●'; margin-right: 8px; animation: recBlink 1s steps(1) infinite; }
+  @keyframes recBlink { 50% { opacity: .15; } }
+  .corner { position: absolute; width: 34px; height: 34px; border: 2px solid rgba(73,215,242,.6); }
+  .corner.tl { top: 14px; left: 14px; border-right: none; border-bottom: none; }
+  .corner.tr { top: 14px; right: 14px; border-left: none; border-bottom: none; }
+  .corner.bl { bottom: 14px; left: 14px; border-right: none; border-top: none; }
+  .corner.br { bottom: 14px; right: 14px; border-left: none; border-top: none; }
+
+  /* ════════════════════════════════════════════════════════
+     SCENE 2b — the cartoon brain interstitial
      ════════════════════════════════════════════════════════ */
   #brain-intro {
     background: radial-gradient(ellipse at 50% 45%, #140a26 0%, #090514 55%, #030208 100%);
@@ -215,10 +266,14 @@
     position: absolute; left: 50%; top: 50%;
     transform: translate(-50%, -46%) scale(.96);
     width: min(420px, 90vw);
-    background: rgba(6, 10, 30, .82);
-    border: 1px solid rgba(61,220,255,.35);
-    border-radius: 18px;
-    box-shadow: 0 0 44px rgba(61,220,255,.18), 0 24px 60px rgba(0,0,0,.6), inset 0 0 30px rgba(61,220,255,.05);
+    background: rgba(4, 14, 26, .88);
+    border: 1px solid rgba(120,235,255,.55);
+    border-radius: 14px;
+    box-shadow:
+      0 0 18px rgba(160,244,255,.35),
+      0 0 70px rgba(53,224,255,.22),
+      0 24px 60px rgba(0,0,0,.6),
+      inset 0 0 34px rgba(53,224,255,.07);
     backdrop-filter: blur(10px);
     padding: 30px 30px 26px;
     opacity: 0; pointer-events: none;
@@ -226,6 +281,13 @@
     z-index: 35;
     text-align: center;
   }
+  /* CPU pins around the login card, so it reads as the chip on the board */
+  #login-card::before, #login-card::after {
+    content: ''; position: absolute; left: 24px; right: 24px; height: 10px;
+    background: repeating-linear-gradient(90deg, rgba(120,235,255,.55) 0 6px, transparent 6px 22px);
+  }
+  #login-card::before { top: -11px; }
+  #login-card::after  { bottom: -11px; }
   #login-card.show { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
   #login-card.shake { animation: shake .45s; }
   @keyframes shake {
@@ -389,6 +451,13 @@
           <stop offset="0" stop-color="#ffffff"/>
           <stop offset="1" stop-color="#d9e8fa"/>
         </linearGradient>
+        <!-- skin-fade beard: stubble at the cheeks, full at the chin -->
+        <linearGradient id="beardFade" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0"   stop-color="#1b1613" stop-opacity=".22"/>
+          <stop offset=".32" stop-color="#1b1613" stop-opacity=".55"/>
+          <stop offset=".55" stop-color="#1b1613" stop-opacity=".85"/>
+          <stop offset=".75" stop-color="#1b1613" stop-opacity="1"/>
+        </linearGradient>
         <clipPath id="torsoClip">
           <path d="M62 174 Q66 158 86 153 L102 149 H118 L134 153 Q154 158 158 174 L162 228 Q138 238 110 238 Q82 238 58 228 Z"/>
         </clipPath>
@@ -468,8 +537,8 @@
           <circle cx="151" cy="88" r="8" fill="#c98a5e"/>
           <!-- face -->
           <path d="M70 76 Q70 32 110 32 Q150 32 150 76 Q150 106 138 122 Q124 138 110 138 Q96 138 82 122 Q70 106 70 76 Z" fill="#c98a5e"/>
-          <!-- full beard: solid mass hugging the jaw, high on the cheeks -->
-          <ellipse cx="110" cy="110" rx="42" ry="45" fill="#1b1613"/>
+          <!-- full beard with skin fade: stubble cheeks → solid chin -->
+          <ellipse cx="110" cy="110" rx="42" ry="45" fill="url(#beardFade)"/>
           <!-- mouth window carved back out of the beard -->
           <rect x="92" y="102" width="36" height="22" rx="10" fill="#c98a5e"/>
           <!-- mustache over the mouth window -->
@@ -538,7 +607,58 @@
   <button id="skip-btn">SKIP INTRO ▸▸</button>
 </div>
 
-<!-- ═══ SCENE 2: cartoon brain ═══ -->
+<!-- ═══ SCENE 2a: cranial scan ═══ -->
+<div class="stage hidden-stage" id="scan-stage">
+  <div id="scan-grid"></div>
+  <div class="corner tl"></div><div class="corner tr"></div>
+  <div class="corner bl"></div><div class="corner br"></div>
+  <div class="hud" id="hud-tl">CRANIAL SCAN v2.6 — SUBJECT: KARAN</div>
+  <div class="hud" id="hud-tr">0%</div>
+  <div class="hud" id="hud-bl"></div>
+  <div class="hud" id="hud-rec">REC</div>
+
+  <div id="scan-head-wrap">
+    <svg width="min(400px,74vw)" viewBox="0 0 400 480" overflow="visible">
+      <!-- side-profile head silhouette: curls, beard, the lot -->
+      <path d="M186 448 L186 396 Q160 380 150 350 Q118 344 104 312 Q76 300 74 258
+               Q52 238 60 196 Q64 150 102 122
+               Q104 84 140 74 Q160 44 196 52 Q228 34 258 62 Q292 62 306 94
+               Q330 108 330 140 Q346 160 336 190
+               L342 214 Q352 226 340 234 L334 252 Q332 268 316 268
+               Q316 292 296 300 Q294 330 266 334 Q252 356 226 352 Q210 372 210 396 L210 448 Z"
+            fill="#0b1a2c" stroke="#49d7f2" stroke-width="2.5" filter="drop-shadow(0 0 14px rgba(73,215,242,.45))"/>
+      <!-- curly hair mass along the crown -->
+      <g fill="none" stroke="#2e8fa6" stroke-width="2" opacity=".7">
+        <circle cx="140" cy="86" r="12"/><circle cx="172" cy="62" r="13"/>
+        <circle cx="208" cy="52" r="13"/><circle cx="244" cy="56" r="12"/>
+        <circle cx="276" cy="72" r="12"/><circle cx="300" cy="98" r="11"/>
+        <circle cx="116" cy="112" r="11"/>
+      </g>
+      <!-- beard hatching on the jaw -->
+      <g stroke="#2e8fa6" stroke-width="1.6" opacity=".65">
+        <path d="M300 292 L312 280 M286 312 L302 296 M268 326 L288 306 M248 338 L272 316 M228 344 L252 324"/>
+      </g>
+      <!-- the brain inside, revealed by the scan -->
+      <g id="scan-brain" opacity=".07">
+        <path d="M140 150 Q130 118 166 106 Q186 84 220 96 Q254 82 276 108 Q306 116 302 150
+                 Q318 168 304 192 Q304 220 274 228 Q262 246 234 240 Q206 252 186 236 Q152 236 148 206 Q130 186 140 150 Z"
+              fill="#ff8fc2" stroke="#ff5fa8" stroke-width="3"/>
+        <path d="M221 96 Q217 160 220 240" stroke="#e2619e" stroke-width="2.4" fill="none"/>
+        <g stroke="#e2619e" stroke-width="2" fill="none" stroke-linecap="round">
+          <path d="M160 140 Q176 130 190 142"/>
+          <path d="M154 178 Q172 168 188 180"/>
+          <path d="M164 208 Q180 198 196 210"/>
+          <path d="M248 138 Q264 128 280 140"/>
+          <path d="M244 176 Q262 166 280 178"/>
+          <path d="M240 206 Q256 196 272 208"/>
+        </g>
+      </g>
+    </svg>
+    <div id="scan-band"></div>
+  </div>
+</div>
+
+<!-- ═══ SCENE 2b: cartoon brain ═══ -->
 <div class="stage hidden-stage" id="brain-intro">
   <div id="brain-svg-wrap">
     <svg width="min(340px,72vw)" viewBox="0 0 240 200">
@@ -587,7 +707,7 @@
 
 <!-- ═══ SCENE 3: neural network + login ═══ -->
 <div class="stage hidden-stage" id="brain-stage">
-  <svg id="brain-map" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+  <svg id="brain-map" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
     <defs>
       <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
         <feGaussianBlur stdDeviation="4" result="b"/>
@@ -597,29 +717,54 @@
         <feGaussianBlur stdDeviation="9" result="b"/>
         <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
       </filter>
+      <radialGradient id="chipCore" cx=".5" cy=".5" r=".7">
+        <stop offset="0" stop-color="#ffffff"/>
+        <stop offset=".7" stop-color="#d5f6ff"/>
+        <stop offset="1" stop-color="#9fe8ff"/>
+      </radialGradient>
     </defs>
 
-    <!-- faint brain folds -->
-    <g stroke="#16214d" stroke-width="26" fill="none" opacity=".5" stroke-linecap="round">
-      <path d="M90 210 Q240 90 430 160 Q600 220 760 130 Q930 60 1110 170"/>
-      <path d="M60 430 Q220 330 420 400 Q640 480 830 380 Q1000 300 1150 400"/>
-      <path d="M120 640 Q300 540 520 620 Q740 700 930 600 Q1070 530 1170 620"/>
+    <!-- faint circuit texture spilling past the brain, like the reference -->
+    <g id="bg-circuit"></g>
+
+    <!-- the brain, as a circuit board -->
+    <path id="brain-shell-glow" fill="none" stroke="#35e0ff" stroke-width="11" opacity=".16" filter="url(#bigglow)"
+      d="M 430 655 Q 330 610 330 505 Q 250 470 285 370 Q 295 255 425 215 Q 470 130 610 135
+         Q 720 90 850 120 Q 990 95 1090 160 Q 1210 175 1260 280 Q 1340 340 1310 440
+         Q 1350 530 1260 585 Q 1240 655 1130 665 Q 1085 700 1010 685 L 975 740 L 905 695
+         Q 780 725 655 695 Q 530 700 430 655 Z"/>
+    <path id="brain-shell" fill="rgba(6,24,38,.92)" stroke="#49e6ff" stroke-width="3" filter="url(#glow)"
+      d="M 430 655 Q 330 610 330 505 Q 250 470 285 370 Q 295 255 425 215 Q 470 130 610 135
+         Q 720 90 850 120 Q 990 95 1090 160 Q 1210 175 1260 280 Q 1340 340 1310 440
+         Q 1350 530 1260 585 Q 1240 655 1130 665 Q 1085 700 1010 685 L 975 740 L 905 695
+         Q 780 725 655 695 Q 530 700 430 655 Z"/>
+
+    <g id="traces"></g>
+
+    <!-- central processor (the login card lands on top of this) -->
+    <g id="cpu" filter="url(#glow)">
+      <rect x="726" y="381" width="148" height="98" rx="10" fill="none" stroke="#9fe8ff" stroke-width="2" opacity=".8"/>
+      <rect x="736" y="391" width="128" height="78" rx="6" fill="url(#chipCore)">
+        <animate attributeName="opacity" values="1;.82;1" dur="2.2s" repeatCount="indefinite"/>
+      </rect>
     </g>
 
-    <!-- layout spine (invisible): neuron positions are sampled from it -->
-    <path id="route" fill="none" stroke="none"
-      d="M60 700 Q150 620 240 640 Q340 660 360 560 Q375 480 300 430 Q220 380 300 310 Q380 245 500 290 Q610 330 660 250 Q705 180 810 200 Q910 220 930 320 Q945 400 860 450 Q780 495 850 570 Q915 635 1030 600 Q1120 570 1150 480"/>
-
-    <g id="bg-neurons"></g>
-    <g id="edges"></g>
     <g id="pulses"></g>
     <g id="stops"></g>
+
+    <!-- stray electric tendrils at the edges -->
+    <g id="tendrils" stroke="#35e0ff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path class="zap" style="animation-delay:.1s;animation-duration:2.1s" d="M40 120 L86 138 L64 166 L118 190"/>
+      <path class="zap" style="animation-delay:.9s;animation-duration:1.8s" d="M1560 200 L1512 224 L1540 250 L1488 282"/>
+      <path class="zap" style="animation-delay:1.5s;animation-duration:2.4s" d="M60 760 L110 744 L92 712 L148 692"/>
+      <path class="zap" style="animation-delay:.5s;animation-duration:2s"   d="M1552 700 L1500 682 L1526 652 L1470 628"/>
+    </g>
   </svg>
 
   <div id="login-card">
     <div class="lc-brand">◉ NEURAL ACCESS GATEWAY</div>
     <h1>KARAN.BRAIN</h1>
-    <div class="lc-sub">You are inside the brain. To go deeper,<br>identify yourself.</div>
+    <div class="lc-sub">You are inside the brain. The central processor<br>wants a name before it lets you deeper.</div>
     <input id="login-input" type="text" placeholder="your first name" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="40">
     <button id="login-btn">REQUEST ACCESS</button>
     <div id="login-msg"></div>
@@ -695,175 +840,243 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
   }
 })();
 
-// ── the 13 neurons of Karan's brain ─────────────────────────
+// ── the 13 components mounted on Karan's motherboard ────────
+// coords in the 1600x900 board space, ringed around the CPU
 const STOPS = [
-  { at: 0.030, label: 'GYM',            icon: '🏋️', color: '#7dff66' },
-  { at: 0.105, label: 'SWIMMING',       icon: '🏊', color: '#3ddcff' },
-  { at: 0.180, label: 'FOOTBALL',       icon: '⚽', color: '#7dff66' },
-  { at: 0.255, label: 'GUITAR',         icon: '🎸', color: '#ff66cc' },
-  { at: 0.330, label: 'WORK',           icon: '💼', color: '#ffb000' },
-  { at: 0.410, label: 'QA FOLLOW-UPS',  icon: '🔁', color: '#3ddcff' },
-  { at: 0.490, label: 'SPRINT MGMT',    icon: '🏃', color: '#a78bfa' },
-  { at: 0.565, label: 'PEOPLE MGMT',    icon: '👥', color: '#ff66cc' },
-  { at: 0.645, label: 'ROADMAP PLANNING', icon: '🗺️', color: '#ffb000' },
-  { at: 0.720, label: 'SCOPING',        icon: '✂️', color: '#7dff66' },
-  { at: 0.800, label: 'SPRINT KT',      icon: '📚', color: '#3ddcff' },
-  { at: 0.880, label: 'LIVE GYAAN SESSION COUNTER', icon: '🗣️', color: '#a78bfa' },
-  { at: 0.960, label: 'CAFFEINE SHOP',  icon: '☕', color: '#ffb000' },
+  { x: 420,  y: 620, label: 'GYM',            icon: '🏋️' },
+  { x: 360,  y: 480, label: 'SWIMMING',       icon: '🏊' },
+  { x: 370,  y: 340, label: 'FOOTBALL',       icon: '⚽' },
+  { x: 470,  y: 250, label: 'GUITAR',         icon: '🎸' },
+  { x: 630,  y: 185, label: 'WORK',           icon: '💼' },
+  { x: 810,  y: 165, label: 'QA FOLLOW-UPS',  icon: '🔁' },
+  { x: 990,  y: 195, label: 'SPRINT MGMT',    icon: '🏃' },
+  { x: 1130, y: 270, label: 'PEOPLE MGMT',    icon: '👥' },
+  { x: 1230, y: 390, label: 'ROADMAP PLANNING', icon: '🗺️' },
+  { x: 1220, y: 520, label: 'SCOPING',        icon: '✂️' },
+  { x: 1100, y: 610, label: 'SPRINT KT',      icon: '📚' },
+  { x: 920,  y: 660, label: 'LIVE GYAAN SESSION COUNTER', icon: '🗣️' },
+  { x: 650,  y: 665, label: 'CAFFEINE SHOP',  icon: '☕' },
 ];
 
-// chain + cross-links so signals visibly criss-cross the whole brain
-const LINKS = [
-  [0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7],[7,8],[8,9],[9,10],[10,11],[11,12],
-  [0,2],[1,3],[2,4],[3,5],[4,6],[5,7],[6,8],[7,9],[8,10],[9,11],[10,12],[0,3],[4,8]
-];
+const CPU = { x1: 726, y1: 381, x2: 874, y2: 479, cx: 800, cy: 430 };
+const traces = [];   // {el, len, pad, endX, endY}
 
-const neurons = [];   // {x, y, color, somaEl, ringEl, coreEl}
-const edges = [];     // {el, len, a, b}
+const snap = v => Math.round(v / 4) * 4;
+
+let usePointFill = null;
+function insideBrain(x, y) {
+  const shell = document.getElementById('brain-shell');
+  if (usePointFill === null) {
+    // isPointInFill lies (always false) while the stage is display:none —
+    // sanity-check with a point that is definitely inside the brain
+    try { usePointFill = shell.isPointInFill(new DOMPoint(800, 430)); }
+    catch (e) { usePointFill = false; }
+  }
+  if (usePointFill) {
+    try { return shell.isPointInFill(new DOMPoint(x, y)); } catch (e) { /* fall through */ }
+  }
+  const dx = (x - 795) / 470, dy = (y - 425) / 265;
+  return dx * dx + dy * dy < 1;
+}
+function insideCPU(x, y) {
+  return x > CPU.x1 - 14 && x < CPU.x2 + 14 && y > CPU.y1 - 14 && y < CPU.y2 + 14;
+}
+
+// PCB-style trace: orthogonal/45° segments, snapped to a grid,
+// growing outward from the CPU (or inward from the rim)
+function genTrace(sx, sy, angle) {
+  let x = snap(sx), y = snap(sy);
+  let d = `M ${x} ${y}`;
+  let ang = Math.round(angle / (Math.PI / 4)) * (Math.PI / 4);
+  let segs = 0, total = 0;
+  const maxSegs = 3 + Math.floor(Math.random() * 3);
+  while (segs < maxSegs) {
+    const len = 36 + Math.random() * 120;
+    let nx = snap(x + Math.cos(ang) * len);
+    let ny = snap(y + Math.sin(ang) * len);
+    // shrink until the endpoint stays on the board
+    let tries = 0;
+    while ((!insideBrain(nx, ny) || insideCPU(nx, ny)) && tries < 6) {
+      nx = snap(x + (nx - x) * 0.6);
+      ny = snap(y + (ny - y) * 0.6);
+      tries++;
+    }
+    if (Math.hypot(nx - x, ny - y) < 18) break;
+    d += ` L ${nx} ${ny}`;
+    total += Math.hypot(nx - x, ny - y);
+    x = nx; y = ny;
+    ang += (Math.random() > 0.5 ? 1 : -1) * (Math.PI / 4);
+    segs++;
+  }
+  if (total < 60) return null;
+  return { d, endX: x, endY: y };
+}
 
 function buildNetwork() {
-  const route = document.getElementById('route');
-  const total = route.getTotalLength();
-  const stopsG = document.getElementById('stops');
-  const edgesG = document.getElementById('edges');
-  const bgG = document.getElementById('bg-neurons');
+  const tracesG = document.getElementById('traces');
+  const bgG = document.getElementById('bg-circuit');
 
-  // neuron positions from the layout spine
-  STOPS.forEach((s) => {
-    const p = route.getPointAtLength(total * s.at);
-    neurons.push({ x: p.x, y: p.y, color: s.color });
-  });
-
-  // ambient background micro-neurons
-  for (let i = 0; i < 46; i++) {
-    const c = document.createElementNS(SVG_NS, 'circle');
-    c.setAttribute('cx', Math.random() * 1200);
-    c.setAttribute('cy', Math.random() * 800);
-    c.setAttribute('r', Math.random() * 1.8 + 0.7);
-    c.setAttribute('fill', ['#3ddcff','#ff66cc','#7dff66','#a78bfa'][i % 4]);
-    c.setAttribute('opacity', '0');
-    const a = document.createElementNS(SVG_NS, 'animate');
-    a.setAttribute('attributeName', 'opacity');
-    a.setAttribute('values', `0;${(0.12 + Math.random() * 0.3).toFixed(2)};0`);
-    a.setAttribute('dur', (1.2 + Math.random() * 2.6).toFixed(2) + 's');
-    a.setAttribute('begin', (Math.random() * 3).toFixed(2) + 's');
-    a.setAttribute('repeatCount', 'indefinite');
-    c.appendChild(a);
-    bgG.appendChild(c);
+  // main traces: fan out from the CPU + extras from a mid ring
+  const specs = [];
+  for (let i = 0; i < 26; i++) {
+    const ang = (i / 26) * Math.PI * 2;
+    const sx = CPU.cx + Math.cos(ang) * 92;
+    const sy = CPU.cy + Math.sin(ang) * 68;
+    specs.push([sx, sy, ang]);
+  }
+  for (let i = 0; i < 22; i++) {
+    const ang = Math.random() * Math.PI * 2;
+    const r = 200 + Math.random() * 160;
+    const sx = CPU.cx + Math.cos(ang) * r;
+    const sy = CPU.cy + Math.sin(ang) * r * 0.72;
+    if (!insideBrain(sx, sy)) continue;
+    specs.push([sx, sy, ang + (Math.random() > 0.5 ? 0.8 : -0.8)]);
   }
 
-  // axon edges: curved beziers between linked neurons
-  LINKS.forEach(([a, b], idx) => {
-    const A = neurons[a], B = neurons[b];
-    const mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2;
-    const dx = B.x - A.x, dy = B.y - A.y;
-    const dist = Math.hypot(dx, dy) || 1;
-    const bend = (idx % 2 ? 1 : -1) * Math.min(70, dist * 0.22);
-    const cx = mx - (dy / dist) * bend;
-    const cy = my + (dx / dist) * bend;
+  specs.forEach(([sx, sy, ang]) => {
+    const t = genTrace(sx, sy, ang);
+    if (!t) return;
     const path = document.createElementNS(SVG_NS, 'path');
-    path.setAttribute('d', `M ${A.x} ${A.y} Q ${cx} ${cy} ${B.x} ${B.y}`);
+    path.setAttribute('d', t.d);
     path.setAttribute('fill', 'none');
-    path.setAttribute('stroke', '#3d5db0');
-    path.setAttribute('stroke-width', '1.4');
+    path.setAttribute('stroke', '#0fbcd8');
+    path.setAttribute('stroke-width', '1.6');
+    path.setAttribute('stroke-linejoin', 'round');
     path.setAttribute('opacity', '0');
-    edgesG.appendChild(path);
-    edges.push({ el: path, len: path.getTotalLength(), a, b });
+    tracesG.appendChild(path);
+
+    // terminating pad: square = component pad, circle = via
+    let pad;
+    if (Math.random() > 0.45) {
+      pad = document.createElementNS(SVG_NS, 'rect');
+      pad.setAttribute('x', t.endX - 4); pad.setAttribute('y', t.endY - 4);
+      pad.setAttribute('width', 8); pad.setAttribute('height', 8);
+    } else {
+      pad = document.createElementNS(SVG_NS, 'circle');
+      pad.setAttribute('cx', t.endX); pad.setAttribute('cy', t.endY);
+      pad.setAttribute('r', 3.4);
+    }
+    pad.setAttribute('fill', '#35e0ff');
+    pad.setAttribute('opacity', '0');
+    pad.setAttribute('filter', 'url(#glow)');
+    tracesG.appendChild(pad);
+
+    traces.push({ el: path, len: path.getTotalLength(), pad, endX: t.endX, endY: t.endY });
   });
 
-  // labeled neurons with dendrites
+  // background circuitry spilling past the brain (dim, like the reference)
+  for (let i = 0; i < 30; i++) {
+    const sx = Math.random() * 1600, sy = Math.random() * 900;
+    if (insideBrain(sx, sy)) continue;
+    let x = snap(sx), y = snap(sy);
+    let ang = Math.round(Math.random() * 8) * (Math.PI / 4);
+    let d = `M ${x} ${y}`;
+    for (let s = 0; s < 2 + Math.floor(Math.random() * 2); s++) {
+      const len = 40 + Math.random() * 110;
+      x = snap(x + Math.cos(ang) * len);
+      y = snap(y + Math.sin(ang) * len);
+      d += ` L ${x} ${y}`;
+      ang += (Math.random() > 0.5 ? 1 : -1) * (Math.PI / 4);
+    }
+    const p = document.createElementNS(SVG_NS, 'path');
+    p.setAttribute('d', d);
+    p.setAttribute('fill', 'none');
+    p.setAttribute('stroke', '#0a3542');
+    p.setAttribute('stroke-width', '1.4');
+    bgG.appendChild(p);
+    if (Math.random() > 0.5) {
+      const dot = document.createElementNS(SVG_NS, 'circle');
+      dot.setAttribute('cx', x); dot.setAttribute('cy', y);
+      dot.setAttribute('r', 2.2);
+      dot.setAttribute('fill', '#19606f');
+      const a = document.createElementNS(SVG_NS, 'animate');
+      a.setAttribute('attributeName', 'opacity');
+      a.setAttribute('values', '.2;1;.2');
+      a.setAttribute('dur', (1.5 + Math.random() * 3).toFixed(2) + 's');
+      a.setAttribute('repeatCount', 'indefinite');
+      dot.appendChild(a);
+      bgG.appendChild(dot);
+    }
+  }
+
+  // the 13 labeled components
+  const stopsG = document.getElementById('stops');
   STOPS.forEach((s, i) => {
-    const n = neurons[i];
     const outer = document.createElementNS(SVG_NS, 'g');
-    outer.setAttribute('transform', `translate(${n.x}, ${n.y})`);
+    outer.setAttribute('transform', `translate(${s.x}, ${s.y})`);
     const g = document.createElementNS(SVG_NS, 'g');
     g.setAttribute('class', 'stop-node');
     const above = i % 2 === 0;
-    const labelY = above ? -36 : 48;
-    const iconY  = above ? -18 : 32;
-    // dendrite twigs
-    let dendrites = '';
-    for (let d = 0; d < 5; d++) {
-      const ang = (d / 5) * Math.PI * 2 + i;
-      const x1 = Math.cos(ang) * 8, y1 = Math.sin(ang) * 8;
-      const x2 = Math.cos(ang) * 17, y2 = Math.sin(ang) * 17;
-      const x3 = Math.cos(ang + 0.35) * 22, y3 = Math.sin(ang + 0.35) * 22;
-      dendrites += `<path d="M ${x1} ${y1} L ${x2} ${y2} M ${x2} ${y2} L ${x3} ${y3}" stroke="${s.color}" stroke-width="1.3" opacity=".5" fill="none"/>`;
-    }
+    const labelY = above ? -30 : 42;
+    const iconY  = above ? -13 : 27;
     g.innerHTML = `
-      ${dendrites}
-      <circle class="n-halo" r="11" fill="${s.color}" opacity=".16" filter="url(#bigglow)"/>
-      <circle class="n-ring" r="7" fill="none" stroke="${s.color}" stroke-width="2" opacity="0"/>
-      <circle class="n-soma" r="6" fill="${s.color}" filter="url(#glow)"/>
-      <circle class="n-core" r="2.3" fill="#fff"/>
-      <text y="${iconY}" text-anchor="middle" font-size="15" style="pointer-events:none">${s.icon}</text>
-      <text class="stop-label" y="${labelY}" text-anchor="middle" fill="${s.color}">${s.label}</text>
+      <rect x="-11" y="-8" width="22" height="16" rx="3" fill="#062733" stroke="#35e0ff" stroke-width="1.8" filter="url(#glow)"/>
+      <path d="M-11 -4 H-16 M-11 0 H-16 M-11 4 H-16 M11 -4 H16 M11 0 H16 M11 4 H16" stroke="#35e0ff" stroke-width="1.6"/>
+      <circle class="pad-core" r="3" fill="#9fe8ff"/>
+      <text y="${iconY}" text-anchor="middle" font-size="14" style="pointer-events:none">${s.icon}</text>
+      <text class="stop-label" y="${labelY}" text-anchor="middle" fill="#7deaff">${s.label}</text>
     `;
     outer.appendChild(g);
     stopsG.appendChild(outer);
-    n.somaEl = g.querySelector('.n-soma');
-    n.ringEl = g.querySelector('.n-ring');
-    n.coreEl = g.querySelector('.n-core');
-    n.nodeEl = g;
+    s.nodeEl = g;
+    s.coreEl = g.querySelector('.pad-core');
   });
 }
 
-function fireNeuron(i) {
-  const n = neurons[i];
-  if (!n || !n.ringEl || typeof n.ringEl.animate !== 'function') return;
-  n.ringEl.animate(
-    [ { opacity: .9, r: 7 }, { opacity: 0, r: 30 } ],
-    { duration: 620, easing: 'ease-out' }
-  );
-  n.somaEl.animate(
-    [ { r: 6 }, { r: 9.5, filter: 'brightness(1.9)' }, { r: 6 } ],
-    { duration: 360, easing: 'ease-out' }
-  );
-  n.coreEl.animate(
-    [ { r: 2.3 }, { r: 4.4 }, { r: 2.3 } ],
-    { duration: 360, easing: 'ease-out' }
+function flashPad(t) {
+  if (!t || !t.pad || typeof t.pad.animate !== 'function') return;
+  t.pad.animate(
+    [ { opacity: 1, filter: 'brightness(2.4)' }, { opacity: .85, filter: 'brightness(1)' } ],
+    { duration: 480, easing: 'ease-out' }
   );
 }
 
-// ── pulse engine: signals racing along axons, all at once ───
+function flashStop() {
+  const s = STOPS[Math.floor(Math.random() * STOPS.length)];
+  if (!s.coreEl || typeof s.coreEl.animate !== 'function') return;
+  s.coreEl.animate(
+    [ { r: 3, filter: 'brightness(1)' }, { r: 5.5, filter: 'brightness(2.2)' }, { r: 3, filter: 'brightness(1)' } ],
+    { duration: 500, easing: 'ease-out' }
+  );
+}
+
+// ── signal engine: data racing along the copper, all at once ─
 let pulsesRunning = false;
 let activePulses = 0;
 
 function spawnPulse() {
-  if (activePulses > 30 || document.hidden) return;
-  const e = edges[Math.floor(Math.random() * edges.length)];
-  if (!e) return;
-  const forward = Math.random() > 0.5;
-  const target = forward ? e.b : e.a;
-  const color = neurons[target].color;
+  if (activePulses > 34 || document.hidden) return;
+  const t = traces[Math.floor(Math.random() * traces.length)];
+  if (!t) return;
+  const outward = Math.random() > 0.4;   // mostly CPU → pads
   const dot = document.createElementNS(SVG_NS, 'circle');
-  dot.setAttribute('r', 2.8);
+  dot.setAttribute('r', 2.6);
   dot.setAttribute('fill', '#ffffff');
   dot.setAttribute('filter', 'url(#glow)');
   const trail = document.createElementNS(SVG_NS, 'circle');
-  trail.setAttribute('r', 4.5);
-  trail.setAttribute('fill', color);
-  trail.setAttribute('opacity', '.4');
+  trail.setAttribute('r', 4.2);
+  trail.setAttribute('fill', '#35e0ff');
+  trail.setAttribute('opacity', '.45');
   const holder = document.getElementById('pulses');
   holder.appendChild(trail);
   holder.appendChild(dot);
   activePulses++;
 
-  const dur = 420 + Math.random() * 620;
+  const dur = 380 + Math.random() * 560;
   const start = performance.now();
   function step(now) {
-    const t = Math.min(1, (now - start) / dur);
-    const L = forward ? t * e.len : (1 - t) * e.len;
-    const p = e.el.getPointAtLength(L);
+    const tt = Math.min(1, (now - start) / dur);
+    const L = outward ? tt * t.len : (1 - tt) * t.len;
+    const p = t.el.getPointAtLength(L);
     dot.setAttribute('cx', p.x); dot.setAttribute('cy', p.y);
-    const Lt = forward ? Math.max(0, L - 10) : Math.min(e.len, L + 10);
-    const pt = e.el.getPointAtLength(Lt);
+    const Lt = outward ? Math.max(0, L - 11) : Math.min(t.len, L + 11);
+    const pt = t.el.getPointAtLength(Lt);
     trail.setAttribute('cx', pt.x); trail.setAttribute('cy', pt.y);
-    if (t < 1) requestAnimationFrame(step);
+    if (tt < 1) requestAnimationFrame(step);
     else {
       dot.remove(); trail.remove();
       activePulses--;
-      if (Math.random() > 0.35) fireNeuron(target);
+      if (outward) flashPad(t);
     }
   }
   requestAnimationFrame(step);
@@ -872,42 +1085,92 @@ function spawnPulse() {
 function startPulses() {
   if (pulsesRunning) return;
   pulsesRunning = true;
-  // heavy traffic: a new signal every ~90ms
-  setInterval(spawnPulse, 90);
-  // ambient self-firing so every neuron stays busy
-  neurons.forEach((n, i) => {
-    (function loop() {
-      setTimeout(() => { if (!document.hidden) fireNeuron(i); loop(); }, 1400 + Math.random() * 3200);
-    })();
-  });
+  // heavy bus traffic
+  setInterval(spawnPulse, 70);
+  // component chips blink on their own
+  setInterval(() => { if (!document.hidden) flashStop(); }, 420);
+  // whole traces occasionally light up end to end
+  setInterval(() => {
+    if (document.hidden) return;
+    const t = traces[Math.floor(Math.random() * traces.length)];
+    if (!t || typeof t.el.animate !== 'function') return;
+    t.el.animate(
+      [ { stroke: '#0fbcd8' }, { stroke: '#b8f4ff' }, { stroke: '#0fbcd8' } ],
+      { duration: 900, easing: 'ease-in-out' }
+    );
+  }, 600);
+}
+
+// ── cranial scan controller ─────────────────────────────────
+const SCAN_LOGS = [
+  [15, 'skull: intact <span class="ok">(surprising)</span>'],
+  [38, 'caffeine saturation: <span class="ok">97%</span>'],
+  [62, 'unread slack detected: <span class="ok">47,382</span>'],
+  [84, 'brain located: <span class="ok">1 (one) — status: OVERCLOCKED</span>'],
+];
+
+function runScan(durMs, onDone) {
+  const scanStage = document.getElementById('scan-stage');
+  const pct = document.getElementById('hud-tr');
+  const log = document.getElementById('hud-bl');
+  const brain = document.getElementById('scan-brain');
+  log.innerHTML = '';
+  pct.textContent = '0%';
+  scanStage.classList.remove('hidden-stage', 'out');
+  void scanStage.offsetWidth;
+  scanStage.classList.add('show');
+  const start = performance.now();
+  let logIdx = 0;
+  function tick(now) {
+    const t = Math.min(1, (now - start) / durMs);
+    const p = Math.floor(t * 100);
+    pct.textContent = p + '%';
+    brain.setAttribute('opacity', (0.07 + t * 0.93).toFixed(2));
+    while (logIdx < SCAN_LOGS.length && p >= SCAN_LOGS[logIdx][0]) {
+      log.innerHTML += SCAN_LOGS[logIdx][1] + '<br>';
+      logIdx++;
+    }
+    if (t < 1) requestAnimationFrame(tick);
+    else {
+      pct.textContent = '100%';
+      setTimeout(() => {
+        scanStage.classList.add('out');
+        setTimeout(() => scanStage.classList.add('hidden-stage'), 480);
+        onDone();
+      }, 340);
+    }
+  }
+  requestAnimationFrame(tick);
 }
 
 // ── intro timeline ──────────────────────────────────────────
 let introDone = false;
 const introTimers = [];
 
-function revealEdges(fast) {
-  edges.forEach((e, i) => {
-    const el = e.el;
-    el.style.strokeDasharray = e.len + ' ' + e.len;
-    el.style.strokeDashoffset = e.len;
-    el.setAttribute('opacity', '.5');
-    const delay = fast ? i * 14 : 120 + i * 55;
+function revealTraces(fast) {
+  traces.forEach((t, i) => {
+    const el = t.el;
+    el.style.strokeDasharray = t.len + ' ' + t.len;
+    el.style.strokeDashoffset = t.len;
+    el.setAttribute('opacity', '.6');
+    const delay = fast ? i * 8 : 80 + i * 26;
     introTimers.push(setTimeout(() => {
-      el.style.transition = `stroke-dashoffset ${fast ? 300 : 700}ms ease-out`;
+      el.style.transition = `stroke-dashoffset ${fast ? 240 : 520}ms ease-out`;
       el.style.strokeDashoffset = '0';
+      setTimeout(() => t.pad.setAttribute('opacity', '.85'), fast ? 240 : 520);
     }, delay));
   });
 }
 
 function stageNetworkReveal(fast) {
   brainStage.classList.remove('hidden-stage');
-  requestAnimationFrame(() => brainStage.classList.add('show'));
-  revealEdges(fast);
+  void brainStage.offsetWidth;   // force reflow — rAF is unreliable in background tabs
+  brainStage.classList.add('show');
+  revealTraces(fast);
   document.querySelectorAll('.stop-node').forEach((n, i) => {
-    introTimers.push(setTimeout(() => n.classList.add('pop'), (fast ? 60 : 400) + i * (fast ? 40 : 110)));
+    introTimers.push(setTimeout(() => n.classList.add('pop'), (fast ? 60 : 500) + i * (fast ? 40 : 100)));
   });
-  introTimers.push(setTimeout(startPulses, fast ? 500 : 1400));
+  introTimers.push(setTimeout(startPulses, fast ? 400 : 1500));
 }
 
 function stageLoginReveal() {
@@ -920,22 +1183,31 @@ function stageLoginReveal() {
 function runIntro() {
   buildNetwork();
   introTimers.push(setTimeout(() => document.getElementById('intro-title').classList.add('show'), 900));
+  // dive into the head
   introTimers.push(setTimeout(() => introStage.classList.add('zooming'), 4200));
+  // scan the skull
   introTimers.push(setTimeout(() => {
-    brainIntro.classList.remove('hidden-stage');
-    requestAnimationFrame(() => brainIntro.classList.add('show'));
-  }, 5300));
-  introTimers.push(setTimeout(() => introStage.classList.add('gone'), 6600));
-  introTimers.push(setTimeout(() => brainIntro.classList.add('burst'), 8100));
-  introTimers.push(setTimeout(() => stageNetworkReveal(false), 8250));
-  introTimers.push(setTimeout(() => brainIntro.classList.add('hidden-stage'), 8900));
-  introTimers.push(setTimeout(() => stageLoginReveal(), 10300));
+    runScan(3000, () => {
+      // reveal the cartoon brain
+      brainIntro.classList.remove('hidden-stage');
+      void brainIntro.offsetWidth;
+      brainIntro.classList.add('show');
+      introTimers.push(setTimeout(() => {
+        brainIntro.classList.add('burst');
+        introTimers.push(setTimeout(() => stageNetworkReveal(false), 160));
+        introTimers.push(setTimeout(() => brainIntro.classList.add('hidden-stage'), 800));
+        introTimers.push(setTimeout(() => stageLoginReveal(), 2100));
+      }, 2100));
+    });
+  }, 5100));
+  introTimers.push(setTimeout(() => introStage.classList.add('gone'), 6500));
 }
 
 function skipIntro() {
   if (introDone) return;
   introTimers.forEach(clearTimeout);
   introStage.classList.add('zooming', 'gone');
+  document.getElementById('scan-stage').classList.add('hidden-stage');
   brainIntro.classList.add('hidden-stage');
   if (brainStage.classList.contains('hidden-stage')) stageNetworkReveal(true);
   document.querySelectorAll('.stop-node').forEach(n => n.classList.add('pop'));
