@@ -281,13 +281,114 @@
     z-index: 35;
     text-align: center;
   }
-  /* CPU pins around the login card, so it reads as the chip on the board */
-  #login-card::before, #login-card::after {
+  /* CPU pins around the cards, so they read as the chip on the board */
+  #login-card::before, #login-card::after,
+  #quiz-card::before, #quiz-card::after {
     content: ''; position: absolute; left: 24px; right: 24px; height: 10px;
     background: repeating-linear-gradient(90deg, rgba(120,235,255,.55) 0 6px, transparent 6px 22px);
   }
-  #login-card::before { top: -11px; }
-  #login-card::after  { bottom: -11px; }
+  #login-card::before, #quiz-card::before { top: -11px; }
+  #login-card::after,  #quiz-card::after  { bottom: -11px; }
+
+  /* ── quiz card: the firewall interrogation ── */
+  #quiz-card {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -46%) scale(.96);
+    width: min(500px, 92vw);
+    background: rgba(4, 14, 26, .9);
+    border: 1px solid rgba(120,235,255,.55);
+    border-radius: 14px;
+    box-shadow:
+      0 0 18px rgba(160,244,255,.35),
+      0 0 70px rgba(53,224,255,.22),
+      0 24px 60px rgba(0,0,0,.6),
+      inset 0 0 34px rgba(53,224,255,.07);
+    backdrop-filter: blur(10px);
+    padding: 24px 26px 24px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .5s ease, transform .5s cubic-bezier(.2,1.2,.4,1);
+    z-index: 35;
+  }
+  #quiz-card.show { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+
+  #quiz-top {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 11px; letter-spacing: 3px; color: var(--cyan);
+    text-shadow: 0 0 10px rgba(61,220,255,.6);
+  }
+  #quiz-count { color: #7f95b5; }
+
+  /* the draining timer */
+  #quiz-timer-wrap {
+    margin-top: 14px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  #quiz-timer-bar {
+    flex: 1; height: 7px; border-radius: 99px;
+    background: rgba(53,224,255,.12);
+    overflow: hidden;
+  }
+  #quiz-timer-fill {
+    height: 100%; width: 100%;
+    background: linear-gradient(90deg, #06b6d4, #35e0ff);
+    border-radius: 99px;
+    box-shadow: 0 0 12px rgba(53,224,255,.6);
+  }
+  #quiz-timer-num {
+    font-size: 20px; font-weight: 800; min-width: 52px; text-align: right;
+    color: #aeeeff; text-shadow: 0 0 12px rgba(53,224,255,.7);
+    font-variant-numeric: tabular-nums;
+  }
+  #quiz-card.low #quiz-timer-fill { background: linear-gradient(90deg, #b91c1c, #ff4455); box-shadow: 0 0 14px rgba(255,68,85,.8); }
+  #quiz-card.low #quiz-timer-num  { color: #ff8896; text-shadow: 0 0 14px rgba(255,68,85,.8); animation: numPanic .5s ease-in-out infinite; }
+  @keyframes numPanic { 50% { transform: scale(1.22); } }
+  #quiz-card.low { animation: cardPanic .5s ease-in-out infinite; }
+  @keyframes cardPanic {
+    0%,100% { box-shadow: 0 0 18px rgba(255,68,85,.25), 0 0 70px rgba(255,68,85,.15), 0 24px 60px rgba(0,0,0,.6); }
+    50%     { box-shadow: 0 0 30px rgba(255,68,85,.5),  0 0 90px rgba(255,68,85,.3),  0 24px 60px rgba(0,0,0,.6); }
+  }
+
+  #quiz-question {
+    margin-top: 18px; font-size: 16.5px; line-height: 1.55; color: #eef7ff;
+    min-height: 52px; font-weight: 700;
+  }
+  #quiz-options { margin-top: 16px; display: grid; gap: 10px; }
+  .quiz-opt {
+    text-align: left; width: 100%;
+    background: rgba(53,224,255,.06);
+    border: 1px solid rgba(61,220,255,.28);
+    border-radius: 10px;
+    color: #cfe9f5; font-family: inherit; font-size: 14px; letter-spacing: .5px;
+    padding: 12px 15px; cursor: pointer;
+    transition: all .15s;
+  }
+  .quiz-opt .opt-key { color: var(--cyan); font-weight: 700; margin-right: 10px; }
+  .quiz-opt:hover { background: rgba(53,224,255,.14); border-color: var(--cyan); transform: translateX(3px); }
+  .quiz-opt:disabled { cursor: default; }
+  .quiz-opt.reveal {
+    background: rgba(51,255,102,.35) !important;
+    border-color: var(--green) !important;
+    color: #eaffef !important;
+    box-shadow: 0 0 22px rgba(51,255,102,.7);
+  }
+  .quiz-opt.picked-wrong {
+    background: rgba(255,68,85,.25) !important;
+    border-color: var(--red) !important;
+  }
+
+  /* verdict overlays inside the card */
+  #quiz-verdict {
+    position: absolute; inset: 0; border-radius: 14px;
+    display: none; align-items: center; justify-content: center; flex-direction: column;
+    text-align: center; padding: 24px;
+    background: rgba(3, 8, 16, .93);
+    z-index: 2;
+  }
+  #quiz-verdict.on { display: flex; }
+  #quiz-verdict .v1 { font-size: 21px; font-weight: 800; letter-spacing: 2px; }
+  #quiz-verdict .v2 { margin-top: 10px; font-size: 12.5px; color: #7f95b5; line-height: 1.7; }
+  #quiz-verdict.fail .v1 { color: var(--red); text-shadow: 0 0 16px rgba(255,68,85,.7); }
+  #quiz-verdict.pass .v1 { color: var(--green); text-shadow: 0 0 16px rgba(51,255,102,.7); }
   #login-card.show { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
   #login-card.shake { animation: shake .45s; }
   @keyframes shake {
@@ -769,6 +870,23 @@
     <button id="login-btn">REQUEST ACCESS</button>
     <div id="login-msg"></div>
   </div>
+
+  <div id="quiz-card">
+    <div id="quiz-top">
+      <span>◉ BRAIN FIREWALL</span>
+      <span id="quiz-count">QUERY 01/05</span>
+    </div>
+    <div id="quiz-timer-wrap">
+      <div id="quiz-timer-bar"><div id="quiz-timer-fill"></div></div>
+      <div id="quiz-timer-num">8.0</div>
+    </div>
+    <div id="quiz-question"></div>
+    <div id="quiz-options"></div>
+    <div id="quiz-verdict">
+      <div class="v1"></div>
+      <div class="v2"></div>
+    </div>
+  </div>
 </div>
 
 <!-- ═══ SCENE 4: terminal ═══ -->
@@ -1249,17 +1367,154 @@ function tryLogin() {
 loginBtn.addEventListener('click', tryLogin);
 loginInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') tryLogin(); });
 
-// ── transition into the brain ───────────────────────────────
-// TODO (next step): the QUIZ gate plugs in here, between login and terminal.
+// ════════════════════════════════════════════════════════════
+// QUIZ — the brain firewall. 8s per question. Any miss = restart.
+// PLACEHOLDER QUESTIONS — Karan will supply the real ones.
+// ════════════════════════════════════════════════════════════
+const QUIZ = [
+  { q: "What is Karan's default drink during a production incident?",
+    o: ['Water, calmly', 'Chai', 'Cold coffee', 'The tears of QA'], c: 1 },
+  { q: 'What does "2 minutes" mean when Karan says it?',
+    o: ['120 seconds', 'He is already there', 'A time span known only to God', 'He forgot about it entirely'], c: 2 },
+  { q: "Karan's honest reaction to 'just a small change'?",
+    o: ['Sure, easy', 'Visible flinch', 'Opens the roadmap silently', 'A 40-minute scoping session'], c: 3 },
+  { q: 'Which of these is a real folder in Karan\'s brain?',
+    o: ['regrets/ (0 items)', 'inbox_zero/', 'meetings_that_ended_early/', 'features_shipped_without_bugs/'], c: 0 },
+  { q: 'What is Karan doing at 2 AM?',
+    o: ['Sleeping like a normal person', 'Gym', 'Typing "what if we just..." into Slack', 'Watching football highlights'], c: 2 },
+];
+
+const QUIZ_TIME = 8000;   // 8 seconds of pressure per question
+const quizCard   = document.getElementById('quiz-card');
+const quizCount  = document.getElementById('quiz-count');
+const quizQ      = document.getElementById('quiz-question');
+const quizOpts   = document.getElementById('quiz-options');
+const quizFill   = document.getElementById('quiz-timer-fill');
+const quizNum    = document.getElementById('quiz-timer-num');
+const quizVerdict = document.getElementById('quiz-verdict');
+
+let quizKey = null;       // who is being interrogated
+let quizIdx = 0;
+let quizTimerIv = null;
+let quizLocked = false;   // answer submitted / transition in progress
+
+function startQuiz(key) {
+  quizKey = key;
+  quizIdx = 0;
+  quizCard.classList.add('show');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const item = QUIZ[quizIdx];
+  quizLocked = false;
+  quizVerdict.className = '';
+  quizVerdict.classList.remove('on');
+  quizCard.classList.remove('low');
+  quizCount.textContent = `QUERY ${String(quizIdx + 1).padStart(2, '0')}/${String(QUIZ.length).padStart(2, '0')}`;
+  quizQ.textContent = item.q;
+  quizOpts.innerHTML = '';
+  const keys = ['A', 'B', 'C', 'D'];
+  item.o.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt';
+    btn.innerHTML = `<span class="opt-key">${keys[i]}</span>${opt.replace(/</g,'&lt;')}`;
+    btn.addEventListener('click', () => answer(i, btn));
+    quizOpts.appendChild(btn);
+  });
+  startQuizTimer();
+}
+
+function startQuizTimer() {
+  clearInterval(quizTimerIv);
+  const end = performance.now() + QUIZ_TIME;
+  quizTimerIv = setInterval(() => {
+    const left = Math.max(0, end - performance.now());
+    quizFill.style.width = (left / QUIZ_TIME * 100) + '%';
+    quizNum.textContent = (left / 1000).toFixed(1);
+    if (left < 3000) quizCard.classList.add('low');
+    if (left <= 0) {
+      clearInterval(quizTimerIv);
+      if (!quizLocked) timeUp();
+    }
+  }, 50);
+}
+
+// flash the right answer for a blink — visible, but gone before it helps
+function blinkCorrect(then) {
+  const btns = quizOpts.querySelectorAll('.quiz-opt');
+  const correctBtn = btns[QUIZ[quizIdx].c];
+  if (correctBtn) correctBtn.classList.add('reveal');
+  setTimeout(() => {
+    if (correctBtn) correctBtn.classList.remove('reveal');
+    setTimeout(then, 140);
+  }, 200);
+}
+
+function answer(i, btn) {
+  if (quizLocked) return;
+  quizLocked = true;
+  clearInterval(quizTimerIv);
+  quizOpts.querySelectorAll('.quiz-opt').forEach(b => b.disabled = true);
+
+  if (i === QUIZ[quizIdx].c) {
+    btn.classList.add('reveal');
+    setTimeout(() => {
+      quizIdx++;
+      if (quizIdx >= QUIZ.length) quizPassed();
+      else renderQuestion();
+    }, 350);
+  } else {
+    btn.classList.add('picked-wrong');
+    blinkCorrect(() => quizFailed('WRONG ANSWER.'));
+  }
+}
+
+function timeUp() {
+  quizLocked = true;
+  quizOpts.querySelectorAll('.quiz-opt').forEach(b => b.disabled = true);
+  blinkCorrect(() => quizFailed("TIME'S UP."));
+}
+
+function quizFailed(reason) {
+  quizVerdict.querySelector('.v1').textContent = '⛔ ACCESS NOT GRANTED';
+  quizVerdict.querySelector('.v2').innerHTML =
+    reason + ' Karan\'s brain rejected you.<br>Restarting interrogation from QUERY 01...';
+  quizVerdict.classList.add('fail', 'on');
+  quizCard.classList.remove('low');
+  setTimeout(() => {
+    quizIdx = 0;
+    renderQuestion();
+  }, 1600);
+}
+
+function quizPassed() {
+  quizVerdict.querySelector('.v1').textContent = '✓ CLEARANCE VERIFIED';
+  quizVerdict.querySelector('.v2').innerHTML =
+    'You actually knew him. The firewall stands down.<br>Opening the inner brain...';
+  quizVerdict.classList.add('pass', 'on');
+  quizCard.classList.remove('low');
+  setTimeout(() => enterTerminal(quizKey), 1500);
+}
+
+// ── login card → quiz ───────────────────────────────────────
 function enterBrain(key) {
   loginCard.style.transition = 'opacity .5s, transform .5s';
   loginCard.style.opacity = '0';
   loginCard.style.transform = 'translate(-50%, -58%) scale(.94)';
+  loginCard.style.pointerEvents = 'none';
+  setTimeout(() => startQuiz(key), 550);
+}
+
+// ── quiz cleared → terminal ─────────────────────────────────
+function enterTerminal(key) {
+  quizCard.style.transition = 'opacity .5s, transform .5s';
+  quizCard.style.opacity = '0';
   setTimeout(() => {
     brainStage.classList.add('hidden-stage');
     termStage.classList.remove('hidden-stage');
     startTerminal(key);
-  }, 650);
+  }, 550);
 }
 
 // ════════════════════════════════════════════════════════════
