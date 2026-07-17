@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>KARAN.BRAIN — restricted access</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #33ff66;
+    --green-dim: #1d9c42;
+    --green-dark: #0d5223;
+    --amber: #ffb000;
+    --red: #ff4455;
+    --cyan: #3ddcff;
+    --bg: #050805;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    overflow: hidden;
+  }
+
+  body {
+    font-family: 'Courier New', ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--green);
+    position: relative;
+  }
+
+  /* ── CRT effects ─────────────────────────────── */
+  .crt::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.18) 0px,
+      rgba(0, 0, 0, 0.18) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events: none;
+    z-index: 10;
+  }
+  .crt::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%);
+    pointer-events: none;
+    z-index: 11;
+  }
+  @keyframes flicker {
+    0% { opacity: 1; } 97% { opacity: 1; } 98% { opacity: 0.92; } 100% { opacity: 1; }
+  }
+  #terminal-wrap { animation: flicker 4s infinite; }
+
+  /* ── Terminal ────────────────────────────────── */
+  #terminal-wrap {
+    height: 100%;
+    overflow-y: auto;
+    padding: 22px 20px 90px;
+    -webkit-overflow-scrolling: touch;
+  }
+  #terminal {
+    max-width: 900px;
+    margin: 0 auto;
+    font-size: 14.5px;
+    line-height: 1.55;
+    text-shadow: 0 0 6px rgba(51, 255, 102, 0.45);
+    word-wrap: break-word;
+  }
+  #terminal .line { min-height: 1.55em; white-space: pre-wrap; }
+
+  .dim    { color: var(--green-dim); }
+  .darker { color: var(--green-dark); }
+  .amber  { color: var(--amber); text-shadow: 0 0 6px rgba(255,176,0,0.45); }
+  .red    { color: var(--red);   text-shadow: 0 0 6px rgba(255,68,85,0.45); }
+  .cyan   { color: var(--cyan);  text-shadow: 0 0 6px rgba(61,220,255,0.45); }
+  .bold   { font-weight: 700; }
+  .glitch { animation: glitchAnim 0.25s steps(2) 3; }
+  @keyframes glitchAnim {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-3px) skewX(-4deg); opacity: 0.7; }
+    75% { transform: translateX(3px) skewX(4deg); }
+    100% { transform: translateX(0); }
+  }
+
+  .memory-block {
+    border: 1px solid var(--green-dim);
+    padding: 14px 16px;
+    margin: 8px 0;
+    background: rgba(51, 255, 102, 0.04);
+    box-shadow: 0 0 18px rgba(51,255,102,0.12) inset;
+  }
+
+  /* ── Input row ───────────────────────────────── */
+  #input-row { display: block; min-height: 1.55em; }
+  #prompt-label { white-space: nowrap; }
+  #cmd-display { white-space: pre-wrap; word-break: break-all; margin-left: 8px; }
+  #cursor {
+    display: inline-block;
+    width: 9px;
+    height: 1.1em;
+    background: var(--green);
+    vertical-align: text-bottom;
+    animation: blink 1s steps(1) infinite;
+    box-shadow: 0 0 8px rgba(51,255,102,0.8);
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  #hidden-input {
+    position: absolute;
+    opacity: 0;
+    left: -9999px;
+    top: 0;
+    width: 10px;
+    height: 10px;
+  }
+
+  /* ── Party mode ──────────────────────────────── */
+  .party-piece {
+    position: fixed;
+    top: -20px;
+    font-size: 18px;
+    z-index: 20;
+    pointer-events: none;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(720deg); }
+  }
+  body.party-mode #terminal { animation: partyColors 0.6s infinite; }
+  @keyframes partyColors {
+    0%   { color: #33ff66; } 25% { color: #3ddcff; }
+    50%  { color: #ff66cc; } 75% { color: #ffb000; }
+    100% { color: #33ff66; }
+  }
+
+  /* ── Matrix canvas ───────────────────────────── */
+  #matrix-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 15;
+    display: none;
+    background: rgba(0,0,0,0.85);
+  }
+
+  @media (max-width: 600px) {
+    #terminal { font-size: 12.5px; }
+    #terminal-wrap { padding: 14px 12px 80px; }
+  }
+</style>
+</head>
+<body class="crt">
+
+<div id="terminal-wrap">
+  <div id="terminal">
+    <div id="output"></div>
+    <div id="input-row" style="display:none">
+      <span id="prompt-label">&gt;</span><span id="cmd-display"></span><span id="cursor"></span>
+    </div>
+  </div>
+</div>
+
+<input id="hidden-input" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+<canvas id="matrix-canvas"></canvas>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// USER DATA — base64(JSON) so view-source doesn't spoil messages.
+// Keys are lowercase first names. Replace via build_users.js + CSV.
+// ════════════════════════════════════════════════════════════
+/*USERS_B64_START*/
+const USERS_B64 = "eyJyYWh1bCI6eyJuYW1lIjoiUmFodWwiLCJtZW1vcnkiOiJSYWh1bCwgS2FyYW4ncyBicmFpbiBoYXMgeW91IGZpbGVkIHVuZGVyICdwZW9wbGUgd2hvIGFjdHVhbGx5IHJlYWQgdGhlIFBSRCcuIFRoYXQgZm9sZGVyIGhhcyBleGFjdGx5IG9uZSBmaWxlIGluIGl0LiBUaGFuayB5b3UgZm9yIGV2ZXJ5IGxhdGUtbmlnaHQgZGVidWcgc2Vzc2lvbiBhbmQgZm9yIG5ldmVyIHNheWluZyAnd29ya3Mgb24gbXkgbWFjaGluZScgd2l0aG91dCBhdCBsZWFzdCBjaGVja2luZyB0d2ljZS4ifSwicHJpeWEiOnsibmFtZSI6IlByaXlhIiwibWVtb3J5IjoiUHJpeWEsIHN0b3JlZCBpbiBsb25nLXRlcm0gbWVtb3J5OiB0aGUgZGF5IHlvdSBkZWZlbmRlZCB0aGUgZGVzaWduIGluIGZyb250IG9mIGZpdmUgc3Rha2Vob2xkZXJzIHdpdGggb25lIHNsaWRlLiBLYXJhbidzIGJyYWluIHN0aWxsIHJlZmVyZW5jZXMgaXQgd2hlbiBpdCBuZWVkcyBjb3VyYWdlLiBLZWVwIGJlaW5nIHRoZSBsb3VkZXN0IHZvaWNlIGZvciB0aGUgdXNlciBpbiBldmVyeSByb29tLiJ9LCJhbWl0Ijp7Im5hbWUiOiJBbWl0IiwibWVtb3J5IjoiQW1pdCwgS2FyYW4ncyBicmFpbiBhbGxvY2F0ZWQgYW4gZW50aXJlIHNlY3RvciB0byB5b3VyIG9uZS1saW5lcnMgaW4gc3ByaW50IHJldmlld3MuIENvbXByZXNzaW9uIGZhaWxlZCAtLSB0aGV5J3JlIGFsbCBrZXBlcnMuIFRoYW5rcyBmb3IgbWFraW5nIHNoaXBwaW5nIGZlZWwgbGlnaHRlciB0aGFuIGl0IGhhZCBhbnkgcmlnaHQgdG8gYmUuIn0sInNuZWhhIjp7Im5hbWUiOiJTbmVoYSIsIm1lbW9yeSI6IlNuZWhhLCB0aGUgYnJhaW4gbG9ncyBzaG93IDQ3IGluc3RhbmNlcyBvZiAnYXNrIFNuZWhhLCBzaGUnbGwga25vdycuIEFjY3VyYWN5IHJhdGU6IDEwMCUuIFlvdSB3ZXJlIHRoZSByZWFsIGRvY3VtZW50YXRpb24gYWxsIGFsb25nLiJ9LCJ2aWtyYW0iOnsibmFtZSI6IlZpa3JhbSIsIm1lbW9yeSI6IlZpa3JhbSwgbWVtb3J5IGZyYWdtZW50IGRlY3J5cHRlZDogdGhhdCByZWxlYXNlIG5pZ2h0IHdoZW4gZXZlcnl0aGluZyBicm9rZSBhbmQgeW91IGp1c3Qgc2FpZCAnY2hhbG8sIGZpeCBrYXJ0ZSBoYWluJy4gS2FyYW4ncyBicmFpbiBtYXJrZWQgdGhhdCBhcyB0aGUgZGVmaW5pdGlvbiBvZiBhIGdvb2QgdGVhbW1hdGUuIn0sInRhbnZpIjp7Im5hbWUiOiJUYW52aSIsIm1lbW9yeSI6IlRhbnZpLCBLYXJhbidzIGJyYWluIGtlcHQgZXZlcnkgJ3doYXQgaWYgd2UganVzdC4uLicgeW91IGV2ZXIgc2FpZCBpbiBicmFpbnN0b3Jtcy4gSGFsZiB0aGUgcm9hZG1hcCBzdGFydGVkIHdpdGggdGhvc2Ugd29yZHMuIE5ldmVyIHN0b3AgYXNraW5nIHRoZW0uIn0sImd1ZXN0Ijp7Im5hbWUiOiJHdWVzdCIsIm1lbW9yeSI6Ik5vIHBlcnNvbmFsIGZpbGUgZm91bmQgLS0gYnV0IGlmIHlvdSdyZSBwb2tpbmcgYXJvdW5kIEthcmFuJ3MgYnJhaW4sIHlvdSBjbGVhcmx5IG1hdHRlcmVkIGVub3VnaCB0byBnZXQgdGhlIGxpbmsuIFRoYW5rIHlvdSBmb3IgYmVpbmcgcGFydCBvZiB0aGUgam91cm5leS4gU3RheSBpbiB0b3VjaCAtLSB0aGUgYnJhaW4gbWF5IGJlIGxlYXZpbmcgdGhlIGJ1aWxkaW5nLCBidXQgaXQncyBzdGlsbCBvbmxpbmUuIn19";
+/*USERS_B64_END*/
+
+const USERS = JSON.parse(decodeURIComponent(escape(atob(USERS_B64))));
+
+const ADVICE = [
+  "If everything is P0, nothing is P0.",
+  "The roadmap is a work of fiction. Write it anyway.",
+  "Ship it. You can apologize in v2.",
+  "'Quick sync' is never quick. Budget accordingly.",
+  "Users lie in interviews. Watch what they click, not what they say.",
+  "An unread Slack message is just future-you's problem.",
+  "Data wins arguments. Chai wins people.",
+  "Scope creep starts with the words 'while we're at it'.",
+  "Your best feature is the one you said no to.",
+  "Never schedule a meeting that ends at lunch. Nobody hears the last 15 minutes.",
+];
+
+// ════════════════════════════════════════════════════════════
+// Terminal engine
+// ════════════════════════════════════════════════════════════
+const output   = document.getElementById('output');
+const wrap     = document.getElementById('terminal-wrap');
+const inputRow = document.getElementById('input-row');
+const cmdDisp  = document.getElementById('cmd-display');
+const promptEl = document.getElementById('prompt-label');
+const hidden   = document.getElementById('hidden-input');
+
+let state = 'boot';          // boot | login | shell
+let busy = false;
+let speedMult = 1;           // set to 0 to skip animations
+let currentUser = null;
+let loginAttempts = 0;
+let memoriesSeen = false;
+
+const sleep = (ms) => new Promise(r => setTimeout(r, ms * speedMult));
+
+function scrollDown() { wrap.scrollTop = wrap.scrollHeight; }
+
+function addLine(html, cls = '') {
+  const div = document.createElement('div');
+  div.className = 'line' + (cls ? ' ' + cls : '');
+  div.innerHTML = html;
+  output.appendChild(div);
+  scrollDown();
+  return div;
+}
+
+// print instantly
+function println(html, cls = '') { return addLine(html, cls); }
+
+// Time-based typewriter: renders however many chars *should* be visible by
+// now, so background-tab setTimeout throttling causes bursts, not stalls.
+async function typeInto(el, text, cps = 28) {
+  const start = performance.now();
+  let shown = 0;
+  while (shown < text.length) {
+    await sleep(16);
+    const target = speedMult === 0
+      ? text.length
+      : Math.min(text.length, Math.floor((performance.now() - start) * cps / 1000) + 1);
+    if (target > shown) {
+      el.textContent = text.slice(0, target);
+      shown = target;
+      scrollDown();
+    }
+  }
+}
+
+async function typeln(text, cls = '', cps = 28) {
+  const div = addLine('', cls);
+  await typeInto(div, text, cps);
+  return div;
+}
+
+// fast dump of many lines (scan effect) — also time-based
+async function dump(lines, delay = 28) {
+  const start = performance.now();
+  let shown = 0;
+  while (shown < lines.length) {
+    const target = speedMult === 0
+      ? lines.length
+      : Math.min(lines.length, Math.floor((performance.now() - start) / delay) + 1);
+    while (shown < target) {
+      const [text, cls] = lines[shown];
+      println(text, cls);
+      shown++;
+    }
+    if (shown < lines.length) await sleep(Math.min(delay, 50));
+  }
+}
+
+function randHex(len) {
+  let s = '';
+  const chars = '0123456789abcdef';
+  for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * chars.length)];
+  return s;
+}
+
+function hexLine() {
+  const groups = [];
+  for (let i = 0; i < 8; i++) groups.push(randHex(2) + randHex(2));
+  return '0x' + randHex(8).toUpperCase() + '  ' + groups.join(' ');
+}
+
+async function progressBar(label, ms = 900, cls = 'dim') {
+  const div = addLine(label + ' [                    ] 0%', cls);
+  const steps = 20;
+  const start = performance.now();
+  let cur = 0;
+  while (cur < steps) {
+    await sleep(30);
+    cur = speedMult === 0
+      ? steps
+      : Math.min(steps, Math.ceil((performance.now() - start) / ms * steps));
+    const pct = Math.round((cur / steps) * 100);
+    div.textContent = label + ' [' + '█'.repeat(cur) + ' '.repeat(steps - cur) + '] ' + pct + '%';
+    scrollDown();
+  }
+}
+
+function showInput(promptText) {
+  promptEl.textContent = promptText;
+  inputRow.style.display = 'block';
+  cmdDisp.textContent = hidden.value;  // show anything buffered during animations
+  scrollDown();
+  hidden.focus();
+}
+function hideInput() { inputRow.style.display = 'none'; }
+
+// echo the submitted command into history
+function echoCommand(text) {
+  println('<span class="dim">' + promptEl.textContent + '</span> ' + escapeHtml(text));
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ════════════════════════════════════════════════════════════
+// Boot sequence
+// ════════════════════════════════════════════════════════════
+async function boot() {
+  busy = true;
+  await sleep(400);
+  println('<span class="bold">▓▓▓ KARAN.BRAIN OS v3.2-final ▓▓▓</span>');
+  println('(c) 1994–2026 Karan Neural Systems. All memories reserved.', 'dim');
+  println('');
+  await sleep(500);
+  await dump([
+    ['> POST check ..................... OK', 'dim'],
+    ['> Mounting /dev/hippocampus ...... OK', 'dim'],
+  ], 300);
+  await progressBar('> Loading long-term memory banks', 1100);
+  await dump([
+    ['> Memory integrity ............... 98% (2% lost to standups)', 'dim'],
+    ['> Caffeine subsystem ............. CRITICAL', 'amber'],
+    ['> Emotional dampeners ............ OFFLINE', 'amber'],
+    ['> Sarcasm module ................. ALWAYS ON', 'dim'],
+  ], 320);
+  println('');
+  await sleep(500);
+  println('⚠ ALERT: Subject "KARAN" is leaving the building.', 'red bold');
+  println('⚠ Brain switched to READ-ONLY. Final handover protocol initiated.', 'red');
+  println('');
+  await sleep(600);
+  await typeln('UNAUTHORIZED ACCESS DETECTED.', 'bold', 34);
+  println('This terminal contains classified memories.', 'dim');
+  println('');
+  println('Identify yourself — type your <span class="cyan bold">first name</span> and hit ENTER:');
+  println('');
+  busy = false;
+  state = 'login';
+  speedMult = 1;
+  showInput('identity >');
+}
+
+// ════════════════════════════════════════════════════════════
+// Login
+// ════════════════════════════════════════════════════════════
+function findUser(raw) {
+  const full = raw.trim().toLowerCase();
+  if (USERS[full]) return full;
+  const first = full.split(/\s+/)[0];
+  if (USERS[first]) return first;
+  return null;
+}
+
+async function handleLogin(raw) {
+  const input = raw.trim();
+  if (!input) return;
+  hideInput();
+  echoCommand(input);
+  busy = true;
+
+  const key = findUser(input);
+  if (!key) {
+    loginAttempts++;
+    if (loginAttempts >= 3) {
+      await dump([
+        ['verifying identity against synapse registry...', 'dim'],
+        ['no record found. no record found. no record f—', 'dim'],
+      ], 350);
+      await sleep(400);
+      println('...fine. Karan\'s brain is too polite to keep anyone out.', 'amber');
+      await grantAccess('guest');
+      return;
+    }
+    await sleep(350);
+    println('ACCESS DENIED — no neural record found for \'' + escapeHtml(input) + '\'.', 'red');
+    println(loginAttempts === 1
+      ? 'Hint: Karan indexes people by first name. Try again:'
+      : 'Still nothing. One more shot before guest protocol kicks in:', 'dim');
+    println('');
+    busy = false;
+    showInput('identity >');
+    return;
+  }
+  await grantAccess(key);
+}
+
+async function grantAccess(key) {
+  currentUser = key;
+  const u = USERS[key];
+  await sleep(300);
+  await dump([
+    ['verifying identity against synapse registry...', 'dim'],
+    [hexLine(), 'darker'],
+    [hexLine(), 'darker'],
+    ['cross-referencing chai break logs...', 'dim'],
+    [hexLine(), 'darker'],
+  ], 180);
+  await sleep(400);
+  const match = println('██▓▒░  MATCH FOUND  ░▒▓██', 'bold glitch');
+  await sleep(600);
+  println('');
+  println('IDENTITY CONFIRMED: <span class="cyan bold">' + escapeHtml(u.name.toUpperCase()) + '</span>');
+  println('clearance level: <span class="amber">PEOPLE-KARAN-ACTUALLY-LIKES</span>');
+  println('');
+  await sleep(500);
+  await typeln('You are in Karan\'s brain now.', 'bold', 26);
+  println('Everything in here is real. Mostly.', 'dim');
+  println('');
+  println('→ type <span class="cyan bold">--memories</span>   to see what Karan\'s brain stored about YOU');
+  println('→ type <span class="cyan">help</span>         to list commands (the ones we admit exist)');
+  println('');
+  busy = false;
+  state = 'shell';
+  showInput(key + '@karan.brain:~$');
+}
+
+// ════════════════════════════════════════════════════════════
+// Shell commands
+// ════════════════════════════════════════════════════════════
+async function cmdMemories() {
+  const u = USERS[currentUser];
+  println('');
+  println('$ grep -rn "' + currentUser + '" /brain/memories --include=*.synapse', 'dim');
+  await sleep(300);
+
+  const scanLines = [];
+  scanLines.push(['scanning 84,213 neural pathways...', 'dim']);
+  for (let i = 0; i < 5; i++) scanLines.push([hexLine(), 'darker']);
+  scanLines.push(['/brain/memories/2024/standup_that_ran_long.synapse ......... no match', 'darker']);
+  scanLines.push([hexLine(), 'darker']);
+  scanLines.push(['/brain/memories/2025/that_one_deadline.synapse ............. no match', 'darker']);
+  for (let i = 0; i < 4; i++) scanLines.push([hexLine(), 'darker']);
+  scanLines.push(['/brain/memories/2025/launch_night.synapse .................. checking', 'darker']);
+  for (let i = 0; i < 3; i++) scanLines.push([hexLine(), 'darker']);
+  scanLines.push(['/brain/memories/core/' + currentUser + '.synapse .................... <span class="cyan bold">MATCH</span>', 'dim']);
+  await dump(scanLines, 60);
+
+  await sleep(300);
+  await progressBar('decrypting memory fragment (AES-256-FEELINGS)', 1300);
+  await sleep(400);
+  println('');
+  println('═══════ MEMORY FRAGMENT: ' + escapeHtml(u.name.toUpperCase()) + ' ═══════', 'cyan bold');
+
+  const block = document.createElement('div');
+  block.className = 'memory-block';
+  output.appendChild(block);
+  const p = document.createElement('div');
+  block.appendChild(p);
+  await typeInto(p, u.memory, 45);
+
+  println('═══════ END OF FRAGMENT ═══════', 'cyan');
+  println('');
+  println('(1 memory rendered. Some things aren\'t stored in text — those stay with Karan.)', 'dim');
+  println('');
+  memoriesSeen = true;
+}
+
+async function cmdHelp() {
+  println('');
+  await dump([
+    ['AVAILABLE COMMANDS', 'bold'],
+    ['  --memories              what Karan\'s brain stored about you', ''],
+    ['  karan --advice          one hard-earned PM lesson, random', ''],
+    ['  blame karan             for when you need it after he\'s gone', ''],
+    ['  ls                      look around the brain', ''],
+    ['  whoami                  identity check', ''],
+    ['  clear                   wipe the screen', ''],
+    ['  exit                    leave the brain', ''],
+    ['', ''],
+    ['...there are also commands this help menu is legally not allowed to mention.', 'dim'],
+    ['explore.', 'dim'],
+  ], 40);
+  println('');
+}
+
+async function cmdAdvice() {
+  println('');
+  println('consulting 3+ years of shipping scars...', 'dim');
+  await sleep(700);
+  const line = ADVICE[Math.floor(Math.random() * ADVICE.length)];
+  await typeln('“' + line + '”', 'amber bold', 30);
+  println('    — Karan, probably in a meeting', 'dim');
+  println('');
+}
+
+async function cmdBlame() {
+  println('');
+  await sleep(400);
+  await typeln('Permission granted. Always.', 'bold', 24);
+  println('(this command will keep working long after July 31.)', 'dim');
+  println('');
+}
+
+async function cmdSudoBack() {
+  println('');
+  await progressBar('attempting rollback of departure', 1200);
+  await sleep(400);
+  println('ERROR 410: GONE.', 'red bold');
+  println('Karan has been permanently migrated to a new cluster.', 'red');
+  println('Forwarding address: LinkedIn. Uptime of friendship: ∞', 'dim');
+  println('');
+}
+
+async function cmdSudoOther() {
+  println('');
+  println(currentUser + ' is not in the sudoers file.', 'red');
+  println('This incident will be reported to HR. (kidding — they have enough going on.)', 'dim');
+  println('');
+}
+
+async function cmdLs() {
+  println('');
+  await dump([
+    ['drwxr-xr-x  memories/               84,213 items', ''],
+    ['drwxr-xr-x  ideas_at_2am/           1,932 items (untested)', ''],
+    ['drwxr-xr-x  chai_recipes/           1 item (perfected)', ''],
+    ['drwxr-xr-x  unread_slack/           47,382 items', 'amber'],
+    ['drwx------  regrets/                0 items', 'cyan'],
+    ['-rw-r--r--  roadmap_final_v7_FINAL_really_final.pptx', 'dim'],
+    ['-rw-r--r--  goodbye.txt', 'dim'],
+  ], 60);
+  println('');
+  println('try: cat goodbye.txt', 'dim');
+  println('');
+}
+
+async function cmdCat(arg) {
+  println('');
+  const a = (arg || '').replace(/\/$/, '');
+  if (a === 'goodbye.txt') {
+    await typeln('It was never about the features we shipped.', '', 26);
+    await typeln('It was about who I got to build them with.', '', 26);
+    await typeln('Thank you. — K', 'bold', 26);
+  } else if (a === 'regrets') {
+    println('cat: regrets/: directory is empty', 'dim');
+  } else if (a === 'unread_slack') {
+    println('cat: unread_slack/: operation timed out (as always)', 'dim');
+  } else if (a === 'ideas_at_2am') {
+    println('“what if the app just… knew?” — rejected, 2024', 'dim');
+    println('“NDR but make it a game” — rejected, 2025', 'dim');
+    println('“a farewell terminal that hacks my brain” — SHIPPED, 2026', 'amber');
+  } else if (a === 'chai_recipes') {
+    println('50% patience, 50% ginger, 100% no sugar-free nonsense.', 'dim');
+  } else {
+    println('cat: ' + escapeHtml(a || '') + ': no such file in this brain', 'red');
+  }
+  println('');
+}
+
+async function cmdWhoami() {
+  println('');
+  const u = USERS[currentUser];
+  println('You are ' + escapeHtml(u.name) + ' — a permanent resident of Karan\'s brain.', '');
+  println('Eviction status: never.', 'dim');
+  println('');
+}
+
+async function cmdChai() {
+  println('');
+  await dump([
+    ['      ( (', 'amber'],
+    ['       ) )', 'amber'],
+    ['    ........', 'dim'],
+    ['    |      |]', 'dim'],
+    ['    \\      /', 'dim'],
+    ['     `----\'', 'dim'],
+  ], 90);
+  println('chai dispensed. productivity +40%. meeting tolerance +200%.', 'amber');
+  println('');
+}
+
+async function cmdHack() {
+  println('');
+  await progressBar('brute-forcing mainframe', 900);
+  await progressBar('bypassing firewall (politely)', 900);
+  await sleep(300);
+  println('You\'re already inside the most secure system Karan owns.', 'bold');
+  println('There is nothing left to hack. Except maybe the planet. 🌍', 'dim');
+  println('');
+}
+
+async function cmdHistory() {
+  println('');
+  await dump([
+    ['  501  ship feature', 'dim'],
+    ['  502  fix feature', 'dim'],
+    ['  503  apologize for feature', 'dim'],
+    ['  504  ship fix for the fix', 'dim'],
+    ['  505  write farewell email', 'dim'],
+    ['  506  cry (internally, in a meeting)', 'dim'],
+    ['  507  build this terminal instead of doing handover docs', 'amber'],
+  ], 70);
+  println('');
+}
+
+async function cmdParty() {
+  println('');
+  await typeln('PARTY PROTOCOL ACTIVATED', 'bold glitch', 30);
+  println('');
+  document.body.classList.add('party-mode');
+  const emojis = ['🎉','🎊','✨','🥳','🚀','💚','🧠'];
+  let count = 0;
+  const iv = setInterval(() => {
+    const el = document.createElement('div');
+    el.className = 'party-piece';
+    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.animationDuration = (2 + Math.random() * 2.5) + 's';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 5000);
+    if (++count > 80) clearInterval(iv);
+  }, 60);
+  setTimeout(() => document.body.classList.remove('party-mode'), 6500);
+  println('this is what every release should have felt like.', 'dim');
+  println('');
+}
+
+async function cmdMatrix() {
+  const canvas = document.getElementById('matrix-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = innerWidth; canvas.height = innerHeight;
+  canvas.style.display = 'block';
+  const cols = Math.floor(canvas.width / 14);
+  const drops = Array(cols).fill(1);
+  const chars = 'KARANカラン01SHIPITアイウ';
+  let frames = 0;
+  const iv = setInterval(() => {
+    ctx.fillStyle = 'rgba(0,0,0,0.07)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#33ff66';
+    ctx.font = '14px monospace';
+    drops.forEach((y, i) => {
+      const ch = chars[Math.floor(Math.random() * chars.length)];
+      ctx.fillText(ch, i * 14, y * 14);
+      if (y * 14 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    });
+    if (++frames > 220) {
+      clearInterval(iv);
+      canvas.style.display = 'none';
+    }
+  }, 33);
+  println('');
+  println('wake up. the sprint has you.', 'dim');
+  println('');
+}
+
+async function cmdExit() {
+  println('');
+  await typeln('logging out of karan.brain...', 'dim', 30);
+  await sleep(500);
+  if (!memoriesSeen) {
+    println('wait — you never ran --memories. there\'s a file in here with your name on it.', 'amber');
+    println('');
+    return;
+  }
+  println('You can check out any time you like,', 'dim');
+  println('but Karan\'s brain never deletes a friend.', 'dim');
+  println('');
+  println('CONNECTION CLOSED. (refresh the page to break in again)', 'bold');
+  println('');
+  hideInput();
+  state = 'closed';
+}
+
+async function handleShell(raw) {
+  const input = raw.trim();
+  if (!input) return;
+  hideInput();
+  echoCommand(input);
+  busy = true;
+
+  const cmd = input.toLowerCase().replace(/\s+/g, ' ');
+
+  if (cmd === '--memories' || cmd === 'memories' || cmd === 'karan --memories' || cmd === 'memory') {
+    await cmdMemories();
+  } else if (cmd === 'help' || cmd === '--help' || cmd === '?') {
+    await cmdHelp();
+  } else if (cmd === 'karan --advice' || cmd === 'advice' || cmd === '--advice') {
+    await cmdAdvice();
+  } else if (cmd === 'blame karan' || cmd === 'blame') {
+    await cmdBlame();
+  } else if (cmd === 'sudo bring-karan-back' || cmd === 'bring-karan-back' || cmd === 'sudo bring karan back') {
+    await cmdSudoBack();
+  } else if (cmd.startsWith('sudo')) {
+    await cmdSudoOther();
+  } else if (cmd === 'ls' || cmd === 'ls -la' || cmd === 'dir') {
+    await cmdLs();
+  } else if (cmd.startsWith('cat ')) {
+    await cmdCat(input.slice(4).trim());
+  } else if (cmd === 'whoami') {
+    await cmdWhoami();
+  } else if (cmd === 'chai' || cmd === 'coffee') {
+    await cmdChai();
+  } else if (cmd === 'hack') {
+    await cmdHack();
+  } else if (cmd === 'history') {
+    await cmdHistory();
+  } else if (cmd === 'party') {
+    await cmdParty();
+  } else if (cmd === 'matrix') {
+    await cmdMatrix();
+  } else if (cmd === 'clear' || cmd === 'cls') {
+    output.innerHTML = '';
+  } else if (cmd === 'exit' || cmd === 'quit' || cmd === 'logout') {
+    await cmdExit();
+    busy = false;
+    return;
+  } else if (cmd === 'pwd') {
+    println('/brain/frontal_lobe/visitors/' + currentUser, 'dim'); println('');
+  } else if (cmd === 'date') {
+    println('Days left with Karan: NaN — he\'s already gone (emotionally).', 'dim'); println('');
+  } else {
+    println('command not found: ' + escapeHtml(input), 'red');
+    println('(karan\'s brain only understands a few things. \'help\' is one of them.)', 'dim');
+    println('');
+  }
+
+  busy = false;
+  if (state !== 'closed') showInput(currentUser + '@karan.brain:~$');
+}
+
+// ════════════════════════════════════════════════════════════
+// Input plumbing
+// ════════════════════════════════════════════════════════════
+hidden.addEventListener('input', () => { cmdDisp.textContent = hidden.value; scrollDown(); });
+
+async function submitLine() {
+  if (busy) return;
+  const val = hidden.value;
+  hidden.value = '';
+  cmdDisp.textContent = '';
+  if (state === 'login') await handleLogin(val);
+  else if (state === 'shell') await handleShell(val);
+}
+
+hidden.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); submitLine(); }
+});
+
+// Document-level fallback: never lose keystrokes, even if the hidden
+// input doesn't have focus yet (fresh load, user just starts typing).
+document.addEventListener('keydown', (e) => {
+  if (state === 'boot') {
+    // first keystroke fast-forwards the boot; also buffer what they type
+    speedMult = 0;
+    if (e.key.length === 1 && !e.metaKey && !e.ctrlKey && !e.altKey) hidden.value += e.key;
+    else if (e.key === 'Backspace') hidden.value = hidden.value.slice(0, -1);
+    return;
+  }
+  if (state === 'closed') return;
+  if (document.activeElement === hidden) return;
+  hidden.focus();
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    submitLine();
+  } else if (e.key === 'Backspace') {
+    e.preventDefault();
+    hidden.value = hidden.value.slice(0, -1);
+    cmdDisp.textContent = hidden.value;
+  } else if (e.key.length === 1 && !e.metaKey && !e.ctrlKey && !e.altKey) {
+    e.preventDefault();
+    hidden.value += e.key;
+    cmdDisp.textContent = hidden.value;
+    scrollDown();
+  }
+});
+
+document.addEventListener('click', () => {
+  if (state === 'boot') speedMult = 0;
+  if (state !== 'closed') hidden.focus();
+});
+document.addEventListener('touchend', () => { if (state !== 'closed') hidden.focus(); });
+
+boot();
+</script>
+</body>
+</html>
