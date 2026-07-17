@@ -15,14 +15,16 @@
     --amber: #ffb000;
     --red: #ff4455;
     --cyan: #3ddcff;
+    --pink: #ff66cc;
+    --lime: #7dff66;
+    --violet: #a78bfa;
     --bg: #050805;
+    --night1: #04061a;
+    --night2: #0a1238;
+    --night3: #101c52;
   }
 
-  html, body {
-    height: 100%;
-    background: var(--bg);
-    overflow: hidden;
-  }
+  html, body { height: 100%; background: #000; overflow: hidden; }
 
   body {
     font-family: 'Courier New', ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -30,46 +32,247 @@
     position: relative;
   }
 
-  /* ── CRT effects ─────────────────────────────── */
-  .crt::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      rgba(0, 0, 0, 0.18) 0px,
-      rgba(0, 0, 0, 0.18) 1px,
-      transparent 1px,
-      transparent 3px
-    );
-    pointer-events: none;
-    z-index: 10;
+  .stage { position: fixed; inset: 0; }
+  .hidden-stage { display: none !important; }
+
+  /* ════════════════════════════════════════════════════════
+     SCENE 1 — the sea, the boat, the human
+     ════════════════════════════════════════════════════════ */
+  #intro-stage {
+    background: linear-gradient(180deg, #01020c 0%, var(--night1) 34%, var(--night2) 62%, var(--night3) 100%);
+    z-index: 40;
+    overflow: hidden;
+    transition: transform 2.3s cubic-bezier(.72,.01,.98,.44), opacity .5s ease 1.9s;
   }
-  .crt::after {
+  #intro-stage.zooming {
+    transform: scale(17);
+    opacity: 0;
+    pointer-events: none;
+  }
+  #intro-stage.gone { display: none; }
+
+  .star {
+    position: absolute; border-radius: 50%; background: #cfe8ff;
+    animation: twinkle 3s infinite;
+  }
+  @keyframes twinkle { 0%,100% { opacity: .9; } 50% { opacity: .15; } }
+
+  .moon {
+    position: absolute; top: 8%; right: 12%;
+    width: 74px; height: 74px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fdf6d8, #d9cfa2 70%);
+    box-shadow: 0 0 60px 18px rgba(253, 246, 216, .25);
+  }
+
+  #intro-title {
+    position: absolute; top: 12%; left: 50%; transform: translateX(-50%);
+    text-align: center; opacity: 0; transition: opacity 1.2s ease;
+    z-index: 5; width: 90%;
+  }
+  #intro-title.show { opacity: 1; }
+  #intro-title .t1 {
+    font-size: clamp(26px, 5vw, 54px); font-weight: 700; letter-spacing: 4px;
+    color: #eaf6ff; text-shadow: 0 0 24px rgba(61,220,255,.55);
+  }
+  #intro-title .t2 {
+    margin-top: 10px; font-size: clamp(11px, 1.6vw, 15px);
+    color: #7fa8c9; letter-spacing: 2px;
+  }
+
+  /* sea */
+  .sea {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 34%;
+    background: linear-gradient(180deg, #0c2547 0%, #071a36 45%, #040f22 100%);
+  }
+  .wave {
+    position: absolute; left: -60%; width: 220%; height: 26px; opacity: .5;
+    background: radial-gradient(60px 16px at 30px 8px, rgba(120,190,255,.35) 30%, transparent 70%);
+    background-size: 120px 26px; background-repeat: repeat-x;
+    animation: waveSlide 9s linear infinite;
+  }
+  @keyframes waveSlide { to { transform: translateX(120px); } }
+
+  /* boat group bobs on the water */
+  #boat-group {
+    position: absolute; left: 50%; bottom: 24%;
+    transform: translateX(-50%);
+    animation: bob 4.5s ease-in-out infinite;
+    z-index: 4;
+  }
+  @keyframes bob {
+    0%,100% { transform: translateX(-50%) translateY(0) rotate(-1.2deg); }
+    50%     { transform: translateX(-50%) translateY(12px) rotate(1.4deg); }
+  }
+
+  /* the human — photo head on illustrated body */
+  #human {
+    position: absolute; left: 50%; bottom: 92px; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center;
+    z-index: 3;
+  }
+  #face {
+    width: 62px; height: 72px; border-radius: 46% 46% 42% 42%;
+    background: url('assets/face.jpg') center 28% / 155% auto no-repeat;
+    border: 2px solid rgba(255,255,255,.25);
+    box-shadow: 0 0 22px rgba(61,220,255,.35);
+  }
+  #body {
+    width: 54px; height: 78px; margin-top: -6px;
+    background: linear-gradient(180deg, #1c3a5e 0%, #142c49 100%);
+    border-radius: 16px 16px 8px 8px;
+    position: relative;
+  }
+  #body::before, #body::after { /* arms */
+    content: ''; position: absolute; top: 8px; width: 12px; height: 52px;
+    background: #163252; border-radius: 8px;
+  }
+  #body::before { left: -10px; transform: rotate(8deg); }
+  #body::after  { right: -10px; transform: rotate(-8deg); }
+
+  /* boat svg */
+  #boat-svg { display: block; }
+
+  #hull-logo-plate {
+    position: absolute; left: 50%; transform: translateX(-50%); bottom: 26px;
+    background: #fff; border-radius: 8px; padding: 5px 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.5);
+    z-index: 5;
+  }
+  #hull-logo-plate img { display: block; height: 20px; width: auto; }
+
+  #skip-btn {
+    position: fixed; right: 22px; bottom: 22px; z-index: 60;
+    background: rgba(255,255,255,.06); color: #9fb6cc;
+    border: 1px solid rgba(255,255,255,.18); border-radius: 99px;
+    padding: 9px 20px; font-family: inherit; font-size: 12px; letter-spacing: 2px;
+    cursor: pointer; transition: all .2s;
+  }
+  #skip-btn:hover { color: #fff; border-color: rgba(255,255,255,.5); }
+
+  /* ════════════════════════════════════════════════════════
+     SCENE 2 — inside the brain: the neon map
+     ════════════════════════════════════════════════════════ */
+  #brain-stage {
+    background: radial-gradient(ellipse at 50% 40%, #0a0d24 0%, #05071a 55%, #020310 100%);
+    z-index: 30; opacity: 0; transition: opacity 1s ease;
+  }
+  #brain-stage.show { opacity: 1; }
+
+  #brain-map {
+    position: absolute; inset: -6%;
+    width: 112%; height: 112%;
+    animation: mapDrift 26s ease-in-out infinite alternate;
+  }
+  @keyframes mapDrift {
+    from { transform: translate(-1.2%, -1%) scale(1); }
+    to   { transform: translate(1.2%, 1.4%) scale(1.045); }
+  }
+
+  .stop-label {
+    font-family: 'Courier New', monospace; font-size: 12.5px; font-weight: 700;
+    letter-spacing: .6px;
+    paint-order: stroke; stroke: rgba(0,0,0,.85); stroke-width: 3px;
+  }
+  .stop-node { opacity: 0; }
+  .stop-node.pop { animation: stopPop .5s cubic-bezier(.2,1.6,.4,1) forwards; }
+  @keyframes stopPop { from { opacity: 0; transform: scale(.2); } to { opacity: 1; transform: scale(1); } }
+
+  /* ── login card ── */
+  #login-card {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -46%) scale(.96);
+    width: min(420px, 90vw);
+    background: rgba(6, 10, 30, .82);
+    border: 1px solid rgba(61,220,255,.35);
+    border-radius: 18px;
+    box-shadow: 0 0 44px rgba(61,220,255,.18), 0 24px 60px rgba(0,0,0,.6), inset 0 0 30px rgba(61,220,255,.05);
+    backdrop-filter: blur(10px);
+    padding: 30px 30px 26px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .7s ease, transform .7s cubic-bezier(.2,1.2,.4,1);
+    z-index: 35;
+    text-align: center;
+  }
+  #login-card.show { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+  #login-card.shake { animation: shake .45s; }
+  @keyframes shake {
+    0%,100% { transform: translate(-50%,-50%); }
+    20% { transform: translate(calc(-50% - 12px),-50%); }
+    40% { transform: translate(calc(-50% + 10px),-50%); }
+    60% { transform: translate(calc(-50% - 7px),-50%); }
+    80% { transform: translate(calc(-50% + 5px),-50%); }
+  }
+
+  #login-card .lc-brand {
+    font-size: 12px; letter-spacing: 5px; color: var(--cyan);
+    text-shadow: 0 0 12px rgba(61,220,255,.7);
+  }
+  #login-card h1 {
+    margin-top: 10px; font-size: 26px; letter-spacing: 2px; color: #eef7ff;
+    text-shadow: 0 0 18px rgba(61,220,255,.35);
+  }
+  #login-card .lc-sub {
+    margin-top: 8px; font-size: 12.5px; color: #7f95b5; line-height: 1.6;
+  }
+  #login-input {
+    margin-top: 22px; width: 100%;
+    background: rgba(2,6,20,.9);
+    border: 1px solid rgba(61,220,255,.3); border-radius: 10px;
+    color: #eaf6ff; font-family: inherit; font-size: 16px; letter-spacing: 1px;
+    padding: 13px 16px; text-align: center; outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  #login-input:focus { border-color: var(--cyan); box-shadow: 0 0 18px rgba(61,220,255,.25); }
+  #login-input::placeholder { color: #46587a; }
+
+  #login-btn {
+    margin-top: 14px; width: 100%;
+    background: linear-gradient(90deg, #0e7490, #0891b2 45%, #06b6d4);
+    color: #04121b; font-weight: 800; letter-spacing: 3px; font-size: 13px;
+    font-family: inherit;
+    border: none; border-radius: 10px; padding: 14px; cursor: pointer;
+    box-shadow: 0 0 24px rgba(6,182,212,.4);
+    transition: transform .15s, box-shadow .2s;
+  }
+  #login-btn:hover { transform: translateY(-1px); box-shadow: 0 0 34px rgba(6,182,212,.6); }
+  #login-btn:active { transform: translateY(1px); }
+
+  #login-msg {
+    margin-top: 13px; min-height: 34px; font-size: 12.5px; line-height: 1.5;
+    color: var(--red);
+  }
+  #login-msg .guest-link {
+    color: var(--amber); cursor: pointer; text-decoration: underline;
+  }
+
+  /* ════════════════════════════════════════════════════════
+     SCENE 3 — the terminal (original KARAN.BRAIN)
+     ════════════════════════════════════════════════════════ */
+  #terminal-stage { background: var(--bg); z-index: 20; }
+
+  .crt-fx::before {
     content: '';
-    position: fixed;
-    inset: 0;
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.18) 0px, rgba(0,0,0,0.18) 1px, transparent 1px, transparent 3px);
+    pointer-events: none; z-index: 10;
+  }
+  .crt-fx::after {
+    content: '';
+    position: absolute; inset: 0;
     background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%);
-    pointer-events: none;
-    z-index: 11;
+    pointer-events: none; z-index: 11;
   }
-  @keyframes flicker {
-    0% { opacity: 1; } 97% { opacity: 1; } 98% { opacity: 0.92; } 100% { opacity: 1; }
-  }
+  @keyframes flicker { 0% { opacity: 1; } 97% { opacity: 1; } 98% { opacity: 0.92; } 100% { opacity: 1; } }
   #terminal-wrap { animation: flicker 4s infinite; }
 
-  /* ── Terminal ────────────────────────────────── */
   #terminal-wrap {
-    height: 100%;
-    overflow-y: auto;
+    height: 100%; overflow-y: auto;
     padding: 22px 20px 90px;
     -webkit-overflow-scrolling: touch;
   }
   #terminal {
-    max-width: 900px;
-    margin: 0 auto;
-    font-size: 14.5px;
-    line-height: 1.55;
+    max-width: 900px; margin: 0 auto;
+    font-size: 14.5px; line-height: 1.55;
     text-shadow: 0 0 6px rgba(51, 255, 102, 0.45);
     word-wrap: break-word;
   }
@@ -91,48 +294,29 @@
 
   .memory-block {
     border: 1px solid var(--green-dim);
-    padding: 14px 16px;
-    margin: 8px 0;
+    padding: 14px 16px; margin: 8px 0;
     background: rgba(51, 255, 102, 0.04);
     box-shadow: 0 0 18px rgba(51,255,102,0.12) inset;
   }
 
-  /* ── Input row ───────────────────────────────── */
   #input-row { display: block; min-height: 1.55em; }
   #prompt-label { white-space: nowrap; }
   #cmd-display { white-space: pre-wrap; word-break: break-all; margin-left: 8px; }
   #cursor {
-    display: inline-block;
-    width: 9px;
-    height: 1.1em;
-    background: var(--green);
-    vertical-align: text-bottom;
+    display: inline-block; width: 9px; height: 1.1em;
+    background: var(--green); vertical-align: text-bottom;
     animation: blink 1s steps(1) infinite;
     box-shadow: 0 0 8px rgba(51,255,102,0.8);
   }
   @keyframes blink { 50% { opacity: 0; } }
 
-  #hidden-input {
-    position: absolute;
-    opacity: 0;
-    left: -9999px;
-    top: 0;
-    width: 10px;
-    height: 10px;
-  }
+  #hidden-input { position: absolute; opacity: 0; left: -9999px; top: 0; width: 10px; height: 10px; }
 
-  /* ── Party mode ──────────────────────────────── */
   .party-piece {
-    position: fixed;
-    top: -20px;
-    font-size: 18px;
-    z-index: 20;
-    pointer-events: none;
-    animation: fall linear forwards;
+    position: fixed; top: -20px; font-size: 18px; z-index: 50;
+    pointer-events: none; animation: fall linear forwards;
   }
-  @keyframes fall {
-    to { transform: translateY(110vh) rotate(720deg); }
-  }
+  @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
   body.party-mode #terminal { animation: partyColors 0.6s infinite; }
   @keyframes partyColors {
     0%   { color: #33ff66; } 25% { color: #3ddcff; }
@@ -140,28 +324,115 @@
     100% { color: #33ff66; }
   }
 
-  /* ── Matrix canvas ───────────────────────────── */
-  #matrix-canvas {
-    position: fixed;
-    inset: 0;
-    z-index: 15;
-    display: none;
-    background: rgba(0,0,0,0.85);
-  }
+  #matrix-canvas { position: fixed; inset: 0; z-index: 45; display: none; background: rgba(0,0,0,0.85); }
 
   @media (max-width: 600px) {
     #terminal { font-size: 12.5px; }
     #terminal-wrap { padding: 14px 12px 80px; }
+    .stop-label { font-size: 11px; }
+    .moon { width: 52px; height: 52px; }
   }
 </style>
 </head>
-<body class="crt">
+<body>
 
-<div id="terminal-wrap">
-  <div id="terminal">
-    <div id="output"></div>
-    <div id="input-row" style="display:none">
-      <span id="prompt-label">&gt;</span><span id="cmd-display"></span><span id="cursor"></span>
+<!-- ═══ SCENE 1: sea + boat ═══ -->
+<div class="stage" id="intro-stage">
+  <div class="moon"></div>
+  <div id="stars"></div>
+  <div id="intro-title">
+    <div class="t1">KARAN.BRAIN</div>
+    <div class="t2">one brain is leaving the building. take a look inside before it sails.</div>
+  </div>
+  <div class="sea">
+    <div class="wave" style="top:6px"></div>
+    <div class="wave" style="top:34px; animation-duration: 7s; opacity:.35"></div>
+    <div class="wave" style="top:66px; animation-duration: 11s; opacity:.25"></div>
+  </div>
+  <div id="boat-group">
+    <div id="human">
+      <div id="face"></div>
+      <div id="body"></div>
+    </div>
+    <svg id="boat-svg" width="340" height="150" viewBox="0 0 340 150">
+      <!-- mast + flag -->
+      <rect x="256" y="6" width="5" height="84" fill="#20406b"/>
+      <path d="M261 8 L318 20 L261 34 Z" fill="#3ddcff" opacity=".9">
+        <animate attributeName="d"
+          values="M261 8 L318 20 L261 34 Z; M261 8 L312 16 L261 34 Z; M261 8 L318 20 L261 34 Z"
+          dur="2.2s" repeatCount="indefinite"/>
+      </path>
+      <!-- hull -->
+      <path d="M12 92 L328 92 L296 144 Q170 156 44 144 Z" fill="#132c4d" stroke="#2a537f" stroke-width="3"/>
+      <path d="M12 92 L328 92 L322 104 L18 104 Z" fill="#1d426d"/>
+    </svg>
+    <div id="hull-logo-plate"><img src="assets/rapidshyp-logo.svg" alt="RapidShyp"></div>
+  </div>
+  <button id="skip-btn">SKIP INTRO ▸▸</button>
+</div>
+
+<!-- ═══ SCENE 2: brain map + login ═══ -->
+<div class="stage hidden-stage" id="brain-stage">
+  <svg id="brain-map" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+        <feGaussianBlur stdDeviation="4" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="bigglow" x="-120%" y="-120%" width="340%" height="340%">
+        <feGaussianBlur stdDeviation="9" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+
+    <!-- faint brain folds -->
+    <g stroke="#16214d" stroke-width="26" fill="none" opacity=".55" stroke-linecap="round">
+      <path d="M90 210 Q240 90 430 160 Q600 220 760 130 Q930 60 1110 170"/>
+      <path d="M60 430 Q220 330 420 400 Q640 480 830 380 Q1000 300 1150 400"/>
+      <path d="M120 640 Q300 540 520 620 Q740 700 930 600 Q1070 530 1170 620"/>
+    </g>
+    <!-- faint street grid -->
+    <g stroke="#0e1636" stroke-width="1.5" opacity=".8">
+      <path d="M0 160 H1200 M0 320 H1200 M0 480 H1200 M0 640 H1200"/>
+      <path d="M150 0 V800 M340 0 V800 M530 0 V800 M720 0 V800 M910 0 V800 M1080 0 V800"/>
+    </g>
+
+    <!-- the route -->
+    <path id="route-glow" fill="none" stroke="#3ddcff" stroke-width="7" opacity=".22" filter="url(#bigglow)"
+      d="M60 700 Q150 620 240 640 Q340 660 360 560 Q375 480 300 430 Q220 380 300 310 Q380 245 500 290 Q610 330 660 250 Q705 180 810 200 Q910 220 930 320 Q945 400 860 450 Q780 495 850 570 Q915 635 1030 600 Q1120 570 1150 480"/>
+    <path id="route" fill="none" stroke="#7de6ff" stroke-width="2.6" stroke-dasharray="3 9" stroke-linecap="round" filter="url(#glow)"
+      d="M60 700 Q150 620 240 640 Q340 660 360 560 Q375 480 300 430 Q220 380 300 310 Q380 245 500 290 Q610 330 660 250 Q705 180 810 200 Q910 220 930 320 Q945 400 860 450 Q780 495 850 570 Q915 635 1030 600 Q1120 570 1150 480"/>
+
+    <g id="stops"></g>
+
+    <!-- the runner agent -->
+    <g id="runner" filter="url(#bigglow)">
+      <circle r="7" fill="#3ddcff" opacity=".35"/>
+      <circle r="3.6" fill="#d9f7ff"/>
+      <animateMotion dur="26s" repeatCount="indefinite" rotate="none">
+        <mpath href="#route"/>
+      </animateMotion>
+    </g>
+  </svg>
+
+  <div id="login-card">
+    <div class="lc-brand">◉ NEURAL ACCESS GATEWAY</div>
+    <h1>KARAN.BRAIN</h1>
+    <div class="lc-sub">You are inside the brain. To go deeper,<br>identify yourself.</div>
+    <input id="login-input" type="text" placeholder="your first name" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="40">
+    <button id="login-btn">REQUEST ACCESS</button>
+    <div id="login-msg"></div>
+  </div>
+</div>
+
+<!-- ═══ SCENE 3: terminal ═══ -->
+<div class="stage hidden-stage crt-fx" id="terminal-stage">
+  <div id="terminal-wrap">
+    <div id="terminal">
+      <div id="output"></div>
+      <div id="input-row" style="display:none">
+        <span id="prompt-label">&gt;</span><span id="cmd-display"></span><span id="cursor"></span>
+      </div>
     </div>
   </div>
 </div>
@@ -194,7 +465,193 @@ const ADVICE = [
 ];
 
 // ════════════════════════════════════════════════════════════
-// Terminal engine
+// SCENE 1+2 — intro timeline, brain map, login
+// ════════════════════════════════════════════════════════════
+const introStage = document.getElementById('intro-stage');
+const brainStage = document.getElementById('brain-stage');
+const termStage  = document.getElementById('terminal-stage');
+const loginCard  = document.getElementById('login-card');
+const loginInput = document.getElementById('login-input');
+const loginBtn   = document.getElementById('login-btn');
+const loginMsg   = document.getElementById('login-msg');
+const skipBtn    = document.getElementById('skip-btn');
+
+// stars
+(function makeStars() {
+  const holder = document.getElementById('stars');
+  for (let i = 0; i < 70; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 2.2 + 0.6;
+    s.style.width = s.style.height = size + 'px';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 55 + '%';
+    s.style.animationDelay = (Math.random() * 3) + 's';
+    s.style.animationDuration = (2 + Math.random() * 3) + 's';
+    holder.appendChild(s);
+  }
+})();
+
+// brain map stops
+const STOPS = [
+  { at: 0.030, label: 'GYM',            icon: '🏋️', color: '#7dff66' },
+  { at: 0.105, label: 'SWIMMING',       icon: '🏊', color: '#3ddcff' },
+  { at: 0.180, label: 'FOOTBALL',       icon: '⚽', color: '#7dff66' },
+  { at: 0.255, label: 'GUITAR',         icon: '🎸', color: '#ff66cc' },
+  { at: 0.330, label: 'WORK',           icon: '💼', color: '#ffb000' },
+  { at: 0.410, label: 'QA FOLLOW-UPS',  icon: '🔁', color: '#3ddcff' },
+  { at: 0.490, label: 'SPRINT MGMT',    icon: '🏃', color: '#a78bfa' },
+  { at: 0.565, label: 'PEOPLE MGMT',    icon: '👥', color: '#ff66cc' },
+  { at: 0.645, label: 'ROADMAP PLANNING', icon: '🗺️', color: '#ffb000' },
+  { at: 0.720, label: 'SCOPING',        icon: '✂️', color: '#7dff66' },
+  { at: 0.800, label: 'SPRINT KT',      icon: '📚', color: '#3ddcff' },
+  { at: 0.880, label: 'LIVE GYAAN SESSION COUNTER', icon: '🗣️', color: '#a78bfa' },
+  { at: 0.960, label: 'CAFFEINE SHOP',  icon: '☕', color: '#ffb000' },
+];
+
+function buildStops() {
+  const route = document.getElementById('route');
+  const holder = document.getElementById('stops');
+  const total = route.getTotalLength();
+  STOPS.forEach((s, i) => {
+    const p = route.getPointAtLength(total * s.at);
+    // outer <g> owns the position (attribute transform); inner <g> owns the
+    // pop animation (CSS transform) — CSS transform overrides the attribute,
+    // so they must live on different elements.
+    const outer = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    outer.setAttribute('transform', `translate(${p.x}, ${p.y})`);
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', 'stop-node');
+    const above = i % 2 === 0;
+    const labelY = above ? -34 : 46;
+    const iconY  = above ? -16 : 30;
+    g.innerHTML = `
+      <circle r="10" fill="${s.color}" opacity=".18" filter="url(#bigglow)"/>
+      <circle r="5.5" fill="${s.color}" filter="url(#glow)"/>
+      <circle r="2.2" fill="#fff"/>
+      <text y="${iconY}" text-anchor="middle" font-size="15" style="pointer-events:none">${s.icon}</text>
+      <text class="stop-label" y="${labelY}" text-anchor="middle" fill="${s.color}">${s.label}</text>
+    `;
+    outer.appendChild(g);
+    holder.appendChild(outer);
+  });
+}
+
+// route draw-in
+function prepRouteDraw() {
+  const route = document.getElementById('route');
+  const len = route.getTotalLength();
+  route.style.strokeDasharray = len + ' ' + len;
+  route.style.strokeDashoffset = len;
+}
+function drawRoute(ms) {
+  const route = document.getElementById('route');
+  route.style.transition = `stroke-dashoffset ${ms}ms ease-in-out`;
+  route.style.strokeDashoffset = '0';
+  setTimeout(() => {
+    // restore the dotted look after draw-in
+    route.style.transition = 'none';
+    route.style.strokeDasharray = '3 9';
+    route.style.strokeDashoffset = '0';
+  }, ms + 60);
+}
+
+let introDone = false;
+const introTimers = [];
+
+function stageBrainReveal() {
+  brainStage.classList.remove('hidden-stage');
+  requestAnimationFrame(() => brainStage.classList.add('show'));
+  prepRouteDraw();
+  drawRoute(1800);
+  document.querySelectorAll('.stop-node').forEach((n, i) => {
+    introTimers.push(setTimeout(() => n.classList.add('pop'), 350 + i * 130));
+  });
+}
+
+function stageLoginReveal() {
+  loginCard.classList.add('show');
+  skipBtn.style.display = 'none';
+  introDone = true;
+  setTimeout(() => loginInput.focus(), 350);
+}
+
+function runIntro() {
+  buildStops();
+  introTimers.push(setTimeout(() => document.getElementById('intro-title').classList.add('show'), 900));
+  introTimers.push(setTimeout(() => introStage.classList.add('zooming'), 3800));
+  introTimers.push(setTimeout(() => stageBrainReveal(), 4700));
+  introTimers.push(setTimeout(() => introStage.classList.add('gone'), 6400));
+  introTimers.push(setTimeout(() => stageLoginReveal(), 8600));
+}
+
+function skipIntro() {
+  if (introDone) return;
+  introTimers.forEach(clearTimeout);
+  introStage.classList.add('zooming');
+  introStage.classList.add('gone');
+  if (brainStage.classList.contains('hidden-stage')) {
+    brainStage.classList.remove('hidden-stage');
+    brainStage.classList.add('show');
+    prepRouteDraw();
+    drawRoute(600);
+  }
+  document.querySelectorAll('.stop-node').forEach(n => n.classList.add('pop'));
+  stageLoginReveal();
+}
+
+skipBtn.addEventListener('click', skipIntro);
+
+// ── login logic ─────────────────────────────────────────────
+let loginFails = 0;
+
+function findUser(raw) {
+  const full = raw.trim().toLowerCase();
+  if (USERS[full]) return full;
+  const first = full.split(/\s+/)[0];
+  if (USERS[first]) return first;
+  return null;
+}
+
+function tryLogin() {
+  const val = loginInput.value.trim();
+  if (!val) { loginCard.classList.add('shake'); setTimeout(()=>loginCard.classList.remove('shake'), 500); return; }
+  const key = findUser(val);
+  if (!key || key === 'guest' && val.toLowerCase() !== 'guest') {
+    if (!key) {
+      loginFails++;
+      loginCard.classList.add('shake');
+      setTimeout(() => loginCard.classList.remove('shake'), 500);
+      if (loginFails >= 2) {
+        loginMsg.innerHTML = `No neural record found for '<b>${val.replace(/</g,'&lt;')}</b>'.<br>Try your first name — or <span class="guest-link" id="guest-link">slip in as guest →</span>`;
+        document.getElementById('guest-link').addEventListener('click', () => enterBrain('guest'));
+      } else {
+        loginMsg.textContent = `Access denied — Karan's brain has no record of '${val}'. Try your first name.`;
+      }
+      return;
+    }
+  }
+  enterBrain(key);
+}
+
+loginBtn.addEventListener('click', tryLogin);
+loginInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') tryLogin(); });
+
+// ── transition into the brain ───────────────────────────────
+// TODO (next step): the QUIZ gate plugs in here, between login and terminal.
+function enterBrain(key) {
+  loginCard.style.transition = 'opacity .5s, transform .5s';
+  loginCard.style.opacity = '0';
+  loginCard.style.transform = 'translate(-50%, -58%) scale(.94)';
+  setTimeout(() => {
+    brainStage.classList.add('hidden-stage');
+    termStage.classList.remove('hidden-stage');
+    startTerminal(key);
+  }, 650);
+}
+
+// ════════════════════════════════════════════════════════════
+// SCENE 3 — Terminal engine (original KARAN.BRAIN)
 // ════════════════════════════════════════════════════════════
 const output   = document.getElementById('output');
 const wrap     = document.getElementById('terminal-wrap');
@@ -203,11 +660,10 @@ const cmdDisp  = document.getElementById('cmd-display');
 const promptEl = document.getElementById('prompt-label');
 const hidden   = document.getElementById('hidden-input');
 
-let state = 'boot';          // boot | login | shell
+let state = 'idle';          // idle | boot | shell | closed
 let busy = false;
 let speedMult = 1;           // set to 0 to skip animations
 let currentUser = null;
-let loginAttempts = 0;
 let memoriesSeen = false;
 
 const sleep = (ms) => new Promise(r => setTimeout(r, ms * speedMult));
@@ -223,7 +679,6 @@ function addLine(html, cls = '') {
   return div;
 }
 
-// print instantly
 function println(html, cls = '') { return addLine(html, cls); }
 
 // Time-based typewriter: renders however many chars *should* be visible by
@@ -305,7 +760,6 @@ function showInput(promptText) {
 }
 function hideInput() { inputRow.style.display = 'none'; }
 
-// echo the submitted command into history
 function echoCommand(text) {
   println('<span class="dim">' + promptEl.textContent + '</span> ' + escapeHtml(text));
 }
@@ -314,91 +768,40 @@ function escapeHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-// ════════════════════════════════════════════════════════════
-// Boot sequence
-// ════════════════════════════════════════════════════════════
-async function boot() {
+// ── boot: identity is pre-verified by the login card ────────
+async function startTerminal(key) {
+  state = 'boot';
   busy = true;
+  speedMult = 1;
   await sleep(400);
   println('<span class="bold">▓▓▓ KARAN.BRAIN OS v3.2-final ▓▓▓</span>');
   println('(c) 1994–2026 Karan Neural Systems. All memories reserved.', 'dim');
   println('');
-  await sleep(500);
+  await sleep(400);
   await dump([
     ['> POST check ..................... OK', 'dim'],
     ['> Mounting /dev/hippocampus ...... OK', 'dim'],
   ], 300);
-  await progressBar('> Loading long-term memory banks', 1100);
+  await progressBar('> Loading long-term memory banks', 1000);
   await dump([
     ['> Memory integrity ............... 98% (2% lost to standups)', 'dim'],
     ['> Caffeine subsystem ............. CRITICAL', 'amber'],
     ['> Emotional dampeners ............ OFFLINE', 'amber'],
     ['> Sarcasm module ................. ALWAYS ON', 'dim'],
-  ], 320);
+  ], 300);
   println('');
-  await sleep(500);
+  await sleep(400);
   println('⚠ ALERT: Subject "KARAN" is leaving the building.', 'red bold');
   println('⚠ Brain switched to READ-ONLY. Final handover protocol initiated.', 'red');
   println('');
-  await sleep(600);
-  await typeln('UNAUTHORIZED ACCESS DETECTED.', 'bold', 34);
-  println('This terminal contains classified memories.', 'dim');
-  println('');
-  println('Identify yourself — type your <span class="cyan bold">first name</span> and hit ENTER:');
-  println('');
-  busy = false;
-  state = 'login';
-  speedMult = 1;
-  showInput('identity >');
-}
-
-// ════════════════════════════════════════════════════════════
-// Login
-// ════════════════════════════════════════════════════════════
-function findUser(raw) {
-  const full = raw.trim().toLowerCase();
-  if (USERS[full]) return full;
-  const first = full.split(/\s+/)[0];
-  if (USERS[first]) return first;
-  return null;
-}
-
-async function handleLogin(raw) {
-  const input = raw.trim();
-  if (!input) return;
-  hideInput();
-  echoCommand(input);
-  busy = true;
-
-  const key = findUser(input);
-  if (!key) {
-    loginAttempts++;
-    if (loginAttempts >= 3) {
-      await dump([
-        ['verifying identity against synapse registry...', 'dim'],
-        ['no record found. no record found. no record f—', 'dim'],
-      ], 350);
-      await sleep(400);
-      println('...fine. Karan\'s brain is too polite to keep anyone out.', 'amber');
-      await grantAccess('guest');
-      return;
-    }
-    await sleep(350);
-    println('ACCESS DENIED — no neural record found for \'' + escapeHtml(input) + '\'.', 'red');
-    println(loginAttempts === 1
-      ? 'Hint: Karan indexes people by first name. Try again:'
-      : 'Still nothing. One more shot before guest protocol kicks in:', 'dim');
-    println('');
-    busy = false;
-    showInput('identity >');
-    return;
-  }
+  await sleep(500);
   await grantAccess(key);
 }
 
 async function grantAccess(key) {
   currentUser = key;
   const u = USERS[key];
+  println('gateway identity handoff: <span class="cyan">' + escapeHtml(u.name) + '</span>', 'dim');
   await sleep(300);
   await dump([
     ['verifying identity against synapse registry...', 'dim'],
@@ -408,7 +811,7 @@ async function grantAccess(key) {
     [hexLine(), 'darker'],
   ], 180);
   await sleep(400);
-  const match = println('██▓▒░  MATCH FOUND  ░▒▓██', 'bold glitch');
+  println('██▓▒░  MATCH FOUND  ░▒▓██', 'bold glitch');
   await sleep(600);
   println('');
   println('IDENTITY CONFIRMED: <span class="cyan bold">' + escapeHtml(u.name.toUpperCase()) + '</span>');
@@ -426,9 +829,7 @@ async function grantAccess(key) {
   showInput(key + '@karan.brain:~$');
 }
 
-// ════════════════════════════════════════════════════════════
-// Shell commands
-// ════════════════════════════════════════════════════════════
+// ── shell commands ──────────────────────────────────────────
 async function cmdMemories() {
   const u = USERS[currentUser];
   println('');
@@ -732,9 +1133,7 @@ async function handleShell(raw) {
   if (state !== 'closed') showInput(currentUser + '@karan.brain:~$');
 }
 
-// ════════════════════════════════════════════════════════════
-// Input plumbing
-// ════════════════════════════════════════════════════════════
+// ── input plumbing ──────────────────────────────────────────
 hidden.addEventListener('input', () => { cmdDisp.textContent = hidden.value; scrollDown(); });
 
 async function submitLine() {
@@ -742,8 +1141,7 @@ async function submitLine() {
   const val = hidden.value;
   hidden.value = '';
   cmdDisp.textContent = '';
-  if (state === 'login') await handleLogin(val);
-  else if (state === 'shell') await handleShell(val);
+  if (state === 'shell') await handleShell(val);
 }
 
 hidden.addEventListener('keydown', (e) => {
@@ -751,10 +1149,11 @@ hidden.addEventListener('keydown', (e) => {
 });
 
 // Document-level fallback: never lose keystrokes, even if the hidden
-// input doesn't have focus yet (fresh load, user just starts typing).
+// input doesn't have focus yet. Only active once the terminal is live.
 document.addEventListener('keydown', (e) => {
+  if (state === 'idle') return;                       // login card handles its own input
+  if (e.target === loginInput) return;
   if (state === 'boot') {
-    // first keystroke fast-forwards the boot; also buffer what they type
     speedMult = 0;
     if (e.key.length === 1 && !e.metaKey && !e.ctrlKey && !e.altKey) hidden.value += e.key;
     else if (e.key === 'Backspace') hidden.value = hidden.value.slice(0, -1);
@@ -778,13 +1177,16 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-document.addEventListener('click', () => {
+document.addEventListener('click', (e) => {
   if (state === 'boot') speedMult = 0;
-  if (state !== 'closed') hidden.focus();
+  if ((state === 'shell') && !loginCard.contains(e.target)) hidden.focus();
 });
-document.addEventListener('touchend', () => { if (state !== 'closed') hidden.focus(); });
+document.addEventListener('touchend', (e) => {
+  if (state === 'shell' && !loginCard.contains(e.target)) hidden.focus();
+});
 
-boot();
+// go
+runIntro();
 </script>
 </body>
 </html>
