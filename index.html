@@ -1372,16 +1372,18 @@ loginInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') tryLogin(
 // PLACEHOLDER QUESTIONS — Karan will supply the real ones.
 // ════════════════════════════════════════════════════════════
 const QUIZ = [
-  { q: "What is Karan's default drink during a production incident?",
-    o: ['Water, calmly', 'Chai', 'Cold coffee', 'The tears of QA'], c: 1 },
-  { q: 'What does "2 minutes" mean when Karan says it?',
-    o: ['120 seconds', 'He is already there', 'A time span known only to God', 'He forgot about it entirely'], c: 2 },
-  { q: "Karan's honest reaction to 'just a small change'?",
-    o: ['Sure, easy', 'Visible flinch', 'Opens the roadmap silently', 'A 40-minute scoping session'], c: 3 },
-  { q: 'Which of these is a real folder in Karan\'s brain?',
-    o: ['regrets/ (0 items)', 'inbox_zero/', 'meetings_that_ended_early/', 'features_shipped_without_bugs/'], c: 0 },
-  { q: 'What is Karan doing at 2 AM?',
-    o: ['Sleeping like a normal person', 'Gym', 'Typing "what if we just..." into Slack', 'Watching football highlights'], c: 2 },
+  { q: 'What does Karan say when he\'s treated to some unique food?',
+    o: ['Perfect', 'Next level', 'Loved it', 'Haven\'t had something like this before'], c: 1 },
+  { q: 'What does Karan say when QA engineers reach out to him with a doubt?',
+    o: ['2 min me dekhte hai', 'Haan bataa', 'User story padh le', 'Mereko nhi pata'], c: 0 },
+  { q: 'What does Karan like doing most in his work?',
+    o: ['Finding max bugs in UAT testing', 'Spending more time on user story writing', 'Talking more to clients', 'Spending more time on UI/UX'], c: 0 },
+  { q: 'What does Karan flex the most?',
+    o: ['F1 Lego', 'Don Bosco', 'Swimming record', 'PS5 games'], c: 1 },
+  { q: 'How does Karan start his LinkedIn posts (and his user stories)?',
+    o: ['As a product manager...', 'As a technical product manager...', 'Let\'s break down the workflow...', 'Do you know about...'], c: 1 },
+  { q: 'Last one — Karan gets:',
+    o: ['Angry when someone isn\'t understanding', 'Curious about something he doesn\'t know', 'An adrenaline rush thinking about doing a backflip', 'All of these'], c: 3 },
 ];
 
 const QUIZ_TIME = 8000;   // 8 seconds of pressure per question
