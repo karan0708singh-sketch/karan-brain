@@ -55,14 +55,14 @@
   </div>
 
 <script>
-const HAIR = '#17130f', HI = '#2c2620';
+const HAIR = '#17130f', HI = '#2c2620', BEARD = '#4a3627';
 
 function beardGrad(i) {
   return `<defs><linearGradient id="bf${i}" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="${HAIR}" stop-opacity=".16"/>
-    <stop offset=".34" stop-color="${HAIR}" stop-opacity=".5"/>
-    <stop offset=".58" stop-color="${HAIR}" stop-opacity=".86"/>
-    <stop offset=".8" stop-color="${HAIR}" stop-opacity="1"/>
+    <stop offset="0" stop-color="${BEARD}" stop-opacity=".12"/>
+    <stop offset=".34" stop-color="${BEARD}" stop-opacity=".38"/>
+    <stop offset=".58" stop-color="${BEARD}" stop-opacity=".68"/>
+    <stop offset=".8" stop-color="${BEARD}" stop-opacity=".9"/>
   </linearGradient></defs>`;
 }
 
@@ -87,18 +87,18 @@ function hair(style) {
 
 function mouth(skin, smile) {
   let m = `<rect x="100" y="120" width="40" height="24" rx="11" fill="${skin}"/>`;
-  m += `<path d="M96 122 Q120 111 144 122 Q137 132 120 130 Q103 132 96 122 Z" fill="${HAIR}"/>`;
+  m += `<path d="M96 122 Q120 111 144 122 Q137 132 120 130 Q103 132 96 122 Z" fill="${BEARD}"/>`;
   m += `<path d="${smile ? 'M107 134 Q120 145 133 134' : 'M108 136 Q120 141 132 136'}" stroke="#7a4a30" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
   return m;
 }
 
 function beard(style, skin, i) {
   if (style === 'stubble') {
-    return `<path d="M82 116 Q82 150 104 166 Q114 174 120 174 Q126 174 136 166 Q158 150 158 116 Q156 150 140 168 Q130 178 120 178 Q110 178 100 168 Q84 150 82 116 Z" fill="${HAIR}" opacity=".3"/>` + mouth(skin, false);
+    return `<path d="M82 116 Q82 150 104 166 Q114 174 120 174 Q126 174 136 166 Q158 150 158 116 Q156 150 140 168 Q130 178 120 178 Q110 178 100 168 Q84 150 82 116 Z" fill="${BEARD}" opacity=".28"/>` + mouth(skin, false);
   }
   const map = { full:{cy:140,rx:47,ry:50}, fuller:{cy:145,rx:50,ry:58}, groomed:{cy:138,rx:43,ry:44} };
   const b = map[style] || map.full;
-  let g = `<path d="M78 94 Q75 122 90 144 M162 94 Q165 122 150 144" stroke="${HAIR}" stroke-width="11" fill="none" opacity=".55" stroke-linecap="round"/>`;
+  let g = `<path d="M78 94 Q75 122 90 144 M162 94 Q165 122 150 144" stroke="${BEARD}" stroke-width="11" fill="none" opacity=".45" stroke-linecap="round"/>`;
   g += `<ellipse cx="120" cy="${b.cy}" rx="${b.rx}" ry="${b.ry}" fill="url(#bf${i})"/>`;
   return g + mouth(skin, style === 'fuller');
 }
