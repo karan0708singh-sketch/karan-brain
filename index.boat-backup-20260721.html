@@ -128,27 +128,17 @@
   }
   @keyframes waveSlide { to { transform: translateX(120px); } }
 
-  /* ── the departure scene: white ship + crew + small boat ── */
-  #sea-svg {
-    position: absolute; left: 50%; bottom: -1%;
+  #boat-group {
+    position: absolute; left: 50%; bottom: 17%;
     transform: translateX(-50%);
-    width: min(1180px, 104vw); height: auto; overflow: visible; z-index: 4;
+    animation: bob 4.6s ease-in-out infinite;
+    z-index: 4;
   }
-  #ship-drift, #depart-boat { will-change: transform; }   /* moved via JS */
-  .boat-bob { animation: bob2 3.1s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
-  @keyframes bob2 {
-    0%,100% { transform: translateY(0) rotate(-1.8deg); }
-    50%     { transform: translateY(5px) rotate(2deg); }
+  @keyframes bob {
+    0%,100% { transform: translateX(-50%) translateY(0) rotate(-1.4deg); }
+    50%     { transform: translateX(-50%) translateY(13px) rotate(1.6deg); }
   }
-  .fade-hide { opacity: 0 !important; transition: opacity .3s ease; }
-  .smoke { animation: smokeRise 4.5s ease-out infinite; transform-box: fill-box; transform-origin: center; }
-  @keyframes smokeRise {
-    0%   { opacity: .45; transform: translate(0,0) scale(.5); }
-    100% { opacity: 0;   transform: translate(-26px,-64px) scale(1.9); }
-  }
-  #bye-bubble { animation: bubbleFloat 3s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
-  @keyframes bubbleFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-  .wave-hand { transform-box: fill-box; transform-origin: bottom center; }
+  #boat-scene { display: block; width: min(560px, 88vw); height: auto; overflow: visible; }
 
   #skip-btn {
     position: fixed; right: 22px; bottom: 22px; z-index: 60;
@@ -550,40 +540,65 @@
     <div class="wave" style="top:66px; animation-duration: 11s; opacity:.25"></div>
   </div>
 
-  <!-- the departure: white RapidShyp ship, crew waving, Karan boarding a small boat -->
-  <svg id="sea-svg" viewBox="0 0 1000 600">
-    <defs>
-      <linearGradient id="hullWhite" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#ffffff"/>
-        <stop offset=".6" stop-color="#eef4fb"/>
-        <stop offset="1" stop-color="#d6e2ee"/>
-      </linearGradient>
-      <linearGradient id="superWhite" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#ffffff"/>
-        <stop offset="1" stop-color="#dfe9f4"/>
-      </linearGradient>
-      <linearGradient id="funnelGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#7c3aed"/>
-        <stop offset="1" stop-color="#5b21b6"/>
-      </linearGradient>
-      <linearGradient id="beardFade" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0"   stop-color="#1b1613" stop-opacity=".22"/>
-        <stop offset=".32" stop-color="#1b1613" stop-opacity=".55"/>
-        <stop offset=".55" stop-color="#1b1613" stop-opacity=".85"/>
-        <stop offset=".75" stop-color="#1b1613" stop-opacity="1"/>
-      </linearGradient>
-      <clipPath id="torsoClip">
-        <path d="M62 174 Q66 158 86 153 L102 149 H118 L134 153 Q154 158 158 174 L162 228 Q138 238 110 238 Q82 238 58 228 Z"/>
-      </clipPath>
+  <div id="boat-group">
+    <svg id="boat-scene" viewBox="0 -160 460 350">
+      <defs>
+        <linearGradient id="hullGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#26507f"/>
+          <stop offset=".5" stop-color="#173a63"/>
+          <stop offset="1" stop-color="#0d2444"/>
+        </linearGradient>
+        <linearGradient id="sailGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#ffffff"/>
+          <stop offset="1" stop-color="#d9e8fa"/>
+        </linearGradient>
+        <!-- skin-fade beard: stubble at the cheeks, full at the chin -->
+        <linearGradient id="beardFade" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0"   stop-color="#1b1613" stop-opacity=".22"/>
+          <stop offset=".32" stop-color="#1b1613" stop-opacity=".55"/>
+          <stop offset=".55" stop-color="#1b1613" stop-opacity=".85"/>
+          <stop offset=".75" stop-color="#1b1613" stop-opacity="1"/>
+        </linearGradient>
+        <clipPath id="torsoClip">
+          <path d="M62 174 Q66 158 86 153 L102 149 H118 L134 153 Q154 158 158 174 L162 228 Q138 238 110 238 Q82 238 58 228 Z"/>
+        </clipPath>
+      </defs>
 
-      <!-- reusable cartoon Karan (front, waving) -->
-      <g id="karan-tpl">
+      <!-- ══ SAILS + MAST ══ -->
+      <rect x="326" y="-128" width="6" height="190" rx="3" fill="#20406b"/>
+      <rect x="332" y="-10" width="86" height="5" rx="2.5" fill="#20406b"/>
+      <!-- main sail (billowing) -->
+      <path fill="url(#sailGrad)" stroke="#b8cde6" stroke-width="1.5" d="M336 -122 L336 -14 L416 -14 Z">
+        <animate attributeName="d" dur="3.4s" repeatCount="indefinite"
+          values="M336 -122 L336 -14 L416 -14 Z;
+                  M336 -122 Q366 -66 344 -14 L416 -14 Z;
+                  M336 -122 L336 -14 L416 -14 Z"/>
+      </path>
+      <!-- jib sail -->
+      <path fill="#c7dcf4" opacity=".9" stroke="#a9c2de" stroke-width="1.2" d="M322 -112 L322 -18 L254 -18 Z">
+        <animate attributeName="d" dur="2.9s" repeatCount="indefinite"
+          values="M322 -112 L322 -18 L254 -18 Z;
+                  M322 -112 Q300 -62 318 -18 L254 -18 Z;
+                  M322 -112 L322 -18 L254 -18 Z"/>
+      </path>
+      <!-- pennant -->
+      <path fill="#3ddcff" d="M332 -130 L364 -122 L332 -114 Z">
+        <animate attributeName="d" dur="1.9s" repeatCount="indefinite"
+          values="M332 -130 L364 -122 L332 -114 Z; M332 -130 L358 -125 L332 -114 Z; M332 -130 L364 -122 L332 -114 Z"/>
+      </path>
+
+      <!-- ══ CARTOON KARAN (feet land on deck) ══ -->
+      <g id="char" transform="translate(96,-124) scale(0.63)">
+        <!-- legs -->
         <path d="M86 236 L86 284 Q86 290 92 290 L100 290 Q105 290 105 284 L106 240 Z" fill="#22304d"/>
         <path d="M116 240 L117 284 Q117 290 122 290 L130 290 Q136 290 136 284 L136 236 Z" fill="#22304d"/>
+        <!-- shoes -->
         <path d="M78 288 Q78 282 88 282 L102 282 Q108 282 108 289 Q108 295 100 295 L84 295 Q78 295 78 288 Z" fill="#f2f5f9"/>
         <path d="M114 289 Q114 282 120 282 L134 282 Q144 282 144 288 Q144 295 138 295 L122 295 Q114 295 114 289 Z" fill="#f2f5f9"/>
         <rect x="78" y="291" width="30" height="4" rx="2" fill="#c9d4e2"/>
         <rect x="114" y="291" width="30" height="4" rx="2" fill="#c9d4e2"/>
+
+        <!-- torso: striped shirt over a gym build -->
         <path d="M62 174 Q66 158 86 153 L102 149 H118 L134 153 Q154 158 158 174 L162 228 Q138 238 110 238 Q82 238 58 228 Z" fill="#f2f7fb"/>
         <g clip-path="url(#torsoClip)" stroke="#9cc4e4" stroke-width="5">
           <line x1="70" y1="145" x2="70" y2="242"/>
@@ -594,11 +609,17 @@
           <line x1="140" y1="145" x2="140" y2="242"/>
           <line x1="154" y1="145" x2="154" y2="242"/>
         </g>
+        <!-- collar -->
         <path d="M96 150 L110 163 L124 150 L118 148 L110 156 L102 148 Z" fill="#dbe7f2"/>
+        <!-- pecs hint -->
         <path d="M84 184 Q97 192 108 185 M112 185 Q123 192 136 184" stroke="#d6e2ee" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+        <!-- left arm: hand on hip -->
         <path d="M66 160 Q52 168 50 190 Q49 204 62 210 L74 214 L78 202 L68 197 Q64 188 68 174 Z" fill="#f2f7fb"/>
         <circle cx="74" cy="208" r="8.5" fill="#c98a5e"/>
-        <g class="wave-hand">
+
+        <!-- right arm: waving goodbye (bare muscular arm, short sleeve) -->
+        <g id="wave-arm">
           <path d="M150 158 Q168 150 178 128 Q186 112 184 100 L170 96 Q170 112 162 126 Q154 140 144 146 Z" fill="#c98a5e"/>
           <path d="M142 148 Q156 142 164 128 L176 138 Q166 152 152 162 Z" fill="#f2f7fb"/>
           <circle cx="177" cy="94" r="11" fill="#c98a5e"/>
@@ -606,17 +627,28 @@
           <animateTransform attributeName="transform" type="rotate"
             values="-10 150 156; 12 150 156; -10 150 156" dur="1.15s" repeatCount="indefinite"/>
         </g>
+
+        <!-- neck -->
         <rect x="100" y="130" width="20" height="24" rx="7" fill="#b97f55"/>
-        <g>
+
+        <!-- HEAD -->
+        <g id="head">
+          <!-- ears -->
           <circle cx="69" cy="88" r="8" fill="#c98a5e"/>
           <circle cx="151" cy="88" r="8" fill="#c98a5e"/>
+          <!-- face -->
           <path d="M70 76 Q70 32 110 32 Q150 32 150 76 Q150 106 138 122 Q124 138 110 138 Q96 138 82 122 Q70 106 70 76 Z" fill="#c98a5e"/>
+          <!-- full beard with skin fade: stubble cheeks → solid chin -->
           <ellipse cx="110" cy="110" rx="42" ry="45" fill="url(#beardFade)"/>
+          <!-- mouth window carved back out of the beard -->
           <rect x="92" y="102" width="36" height="22" rx="10" fill="#c98a5e"/>
+          <!-- mustache over the mouth window -->
           <path d="M88 104 Q110 95 132 104 Q126 113 110 111 Q94 113 88 104 Z" fill="#1b1613"/>
           <path d="M101 119 Q110 124 119 119" stroke="#8a4b32" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+          <!-- nose -->
           <path d="M110 86 Q114 96 110 101 Q107 103 105 100" stroke="#b3714a" stroke-width="2.6" fill="none" stroke-linecap="round"/>
-          <g>
+          <!-- chrome wraparound sunglasses -->
+          <g id="shades">
             <path d="M70 76 Q110 66 150 76 L150 84 Q110 74 70 84 Z" fill="#cfd6dd"/>
             <ellipse cx="92" cy="82" rx="17.5" ry="11.5" fill="#14181d" stroke="#cfd6dd" stroke-width="3.4"/>
             <ellipse cx="128" cy="82" rx="17.5" ry="11.5" fill="#14181d" stroke="#cfd6dd" stroke-width="3.4"/>
@@ -624,178 +656,55 @@
             <ellipse cx="86" cy="78" rx="5.5" ry="2.4" fill="#ffffff" opacity=".75" transform="rotate(-14 86 78)">
               <animate attributeName="opacity" values=".15;.85;.15" dur="2.6s" repeatCount="indefinite"/>
             </ellipse>
+            <ellipse cx="122" cy="78" rx="4.5" ry="2" fill="#ffffff" opacity=".55" transform="rotate(-14 122 78)">
+              <animate attributeName="opacity" values=".1;.6;.1" dur="2.6s" begin=".4s" repeatCount="indefinite"/>
+            </ellipse>
           </g>
+          <!-- brows above shades -->
           <path d="M78 66 Q90 60 102 65" stroke="#1b1613" stroke-width="5" fill="none" stroke-linecap="round"/>
           <path d="M118 65 Q130 60 142 66" stroke="#1b1613" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <!-- curly hair -->
           <g fill="#191512">
-            <circle cx="80" cy="48" r="15"/><circle cx="97" cy="38" r="16"/><circle cx="115" cy="34" r="16"/>
-            <circle cx="132" cy="40" r="15"/><circle cx="145" cy="52" r="13"/><circle cx="70" cy="60" r="12"/>
-            <circle cx="150" cy="64" r="11"/><circle cx="88" cy="44" r="12"/><circle cx="124" cy="36" r="12"/>
+            <circle cx="80" cy="48" r="15"/>
+            <circle cx="97" cy="38" r="16"/>
+            <circle cx="115" cy="34" r="16"/>
+            <circle cx="132" cy="40" r="15"/>
+            <circle cx="145" cy="52" r="13"/>
+            <circle cx="70" cy="60" r="12"/>
+            <circle cx="150" cy="64" r="11"/>
+            <circle cx="88" cy="44" r="12"/>
+            <circle cx="124" cy="36" r="12"/>
             <circle cx="106" cy="40" r="13"/>
-            <circle cx="76" cy="52" r="5" fill="#2b2420"/><circle cx="95" cy="41" r="5" fill="#2b2420"/>
-            <circle cx="113" cy="37" r="5" fill="#2b2420"/><circle cx="131" cy="44" r="5" fill="#2b2420"/>
+            <!-- curl texture -->
+            <circle cx="76" cy="52" r="5" fill="#2b2420"/>
+            <circle cx="95" cy="41" r="5" fill="#2b2420"/>
+            <circle cx="113" cy="37" r="5" fill="#2b2420"/>
+            <circle cx="131" cy="44" r="5" fill="#2b2420"/>
             <circle cx="144" cy="57" r="4" fill="#2b2420"/>
           </g>
         </g>
       </g>
 
-      <!-- a small waving crew member; recolored per instance -->
-      <g id="crew-m">
-        <rect x="-4" y="18" width="4.5" height="18" rx="1.5" fill="#2b3a55"/>
-        <rect x="1" y="18" width="4.5" height="18" rx="1.5" fill="#2b3a55"/>
-        <path d="M-9 -6 Q-9 -12 0 -12 Q9 -12 9 -6 L9 18 L-9 18 Z" fill="#bfe0f2"/>
-        <path d="M-9 -6 L0 2 L9 -6 L5 -8 L0 -3 L-5 -8 Z" fill="#e8f4fb"/>
-        <line x1="0" y1="-2" x2="0" y2="10" stroke="#1f6fb0" stroke-width="1.6"/>
-        <rect x="-3" y="9" width="6" height="7" rx="1" fill="#ffd24a"/>
-        <circle cx="0" cy="-16" r="7" fill="#c98a5e"/>
-        <path d="M-7 -18 Q-7 -26 0 -26 Q7 -26 7 -18 Q4 -22 0 -22 Q-4 -22 -7 -18 Z" fill="#20180f"/>
-        <g class="wave-hand" style="transform-origin:8px -8px">
-          <path d="M8 -8 L18 -26" stroke="#c98a5e" stroke-width="4.5" stroke-linecap="round"/>
-          <circle cx="19" cy="-28" r="3.4" fill="#c98a5e"/>
-          <animateTransform attributeName="transform" type="rotate" values="-14 8 -8; 16 8 -8; -14 8 -8" dur="1s" repeatCount="indefinite"/>
-        </g>
-        <path d="M-8 -6 Q-14 0 -12 12" stroke="#c98a5e" stroke-width="4.5" fill="none" stroke-linecap="round"/>
-      </g>
-
-      <!-- a female crew member (ponytail / blouse) -->
-      <g id="crew-f">
-        <path d="M-8 16 L-3 34 L3 34 L8 16 Z" fill="#3a2b55"/>
-        <path d="M-10 -6 Q-10 -12 0 -12 Q10 -12 10 -6 L11 20 L-11 20 Z" fill="#f7b8d0"/>
-        <line x1="0" y1="-2" x2="0" y2="10" stroke="#b03a6a" stroke-width="1.6"/>
-        <rect x="-3" y="9" width="6" height="7" rx="1" fill="#ffd24a"/>
-        <circle cx="0" cy="-16" r="7" fill="#d59a6e"/>
-        <path d="M-7 -18 Q-8 -27 0 -27 Q8 -27 7 -18 L9 -6 Q6 -12 6 -18 Q3 -22 0 -22 Q-3 -22 -6 -18 Q-6 -12 -9 -6 Z" fill="#241a10"/>
-        <path d="M6 -20 Q16 -18 14 -2" stroke="#241a10" stroke-width="5" fill="none" stroke-linecap="round"/>
-        <g class="wave-hand" style="transform-origin:9px -7px">
-          <path d="M9 -7 L19 -25" stroke="#d59a6e" stroke-width="4.2" stroke-linecap="round"/>
-          <circle cx="20" cy="-27" r="3.2" fill="#d59a6e"/>
-          <animateTransform attributeName="transform" type="rotate" values="-16 9 -7; 14 9 -7; -16 9 -7" dur="1.1s" repeatCount="indefinite"/>
-        </g>
-        <path d="M-9 -6 Q-15 0 -13 12" stroke="#d59a6e" stroke-width="4.2" fill="none" stroke-linecap="round"/>
-      </g>
-    </defs>
-
-    <!-- ══════════ SHIP + CREW (slides left on departure) ══════════ -->
-    <g id="ship-drift">
-      <g id="ship">
-        <!-- hull -->
-        <path d="M150 300 L724 300 L712 374 Q705 446 632 448 L262 448 Q182 446 172 398 L150 322 Z"
-              fill="url(#hullWhite)" stroke="#b9cbdd" stroke-width="3"/>
-        <!-- waterline accent -->
-        <path d="M168 408 L710 408 L706 424 L172 424 Z" fill="#2f9fc4"/>
-        <path d="M168 402 L711 402" stroke="#173a63" stroke-width="2" opacity=".5"/>
-        <!-- portholes -->
-        <g fill="#8fd0ef" stroke="#7fb0cc" stroke-width="1.5">
-          <circle cx="250" cy="350" r="6"/><circle cx="300" cy="352" r="6"/><circle cx="350" cy="353" r="6"/>
-          <circle cx="560" cy="353" r="6"/><circle cx="610" cy="352" r="6"/><circle cx="660" cy="350" r="6"/>
-        </g>
-        <!-- RapidShyp logo on hull -->
-        <rect x="398" y="336" width="150" height="30" rx="6" fill="#ffffff"/>
-        <image href="assets/rapidshyp-logo.svg" x="406" y="342" width="134" height="20"/>
-        <!-- superstructure -->
-        <rect x="252" y="214" width="392" height="88" rx="8" fill="url(#superWhite)" stroke="#c3d4e6" stroke-width="2.5"/>
-        <rect x="330" y="176" width="210" height="42" rx="7" fill="url(#superWhite)" stroke="#c3d4e6" stroke-width="2.5"/>
-        <!-- window rows -->
-        <g fill="#63b7de">
-          <rect x="270" y="232" width="16" height="16" rx="2"/><rect x="296" y="232" width="16" height="16" rx="2"/>
-          <rect x="322" y="232" width="16" height="16" rx="2"/><rect x="348" y="232" width="16" height="16" rx="2"/>
-          <rect x="374" y="232" width="16" height="16" rx="2"/><rect x="400" y="232" width="16" height="16" rx="2"/>
-          <rect x="480" y="232" width="16" height="16" rx="2"/><rect x="506" y="232" width="16" height="16" rx="2"/>
-          <rect x="532" y="232" width="16" height="16" rx="2"/><rect x="558" y="232" width="16" height="16" rx="2"/>
-          <rect x="584" y="232" width="16" height="16" rx="2"/><rect x="610" y="232" width="16" height="16" rx="2"/>
-          <rect x="346" y="188" width="16" height="18" rx="2"/><rect x="372" y="188" width="16" height="18" rx="2"/>
-          <rect x="470" y="188" width="16" height="18" rx="2"/><rect x="496" y="188" width="16" height="18" rx="2"/>
-        </g>
-        <!-- funnel + smoke -->
-        <rect x="470" y="150" width="46" height="70" rx="8" fill="url(#funnelGrad)"/>
-        <rect x="470" y="166" width="46" height="10" fill="#ffffff" opacity=".85"/>
-        <circle class="smoke" cx="493" cy="150" r="10" fill="#c9d4e2"/>
-        <circle class="smoke" cx="493" cy="150" r="8" fill="#d8e2ee" style="animation-delay:1.5s"/>
-        <circle class="smoke" cx="493" cy="150" r="9" fill="#cdd8e6" style="animation-delay:3s"/>
-        <!-- mast + flag -->
-        <rect x="432" y="118" width="4" height="60" fill="#8aa2bb"/>
-        <path d="M436 122 L472 130 L436 138 Z" fill="#3ddcff">
-          <animate attributeName="d" dur="2s" repeatCount="indefinite"
-            values="M436 122 L472 130 L436 138 Z; M436 122 L466 128 L436 138 Z; M436 122 L472 130 L436 138 Z"/>
-        </path>
-        <!-- deck railing -->
-        <g stroke="#9fb6cc" stroke-width="2">
-          <line x1="180" y1="286" x2="720" y2="286"/>
-          <line x1="196" y1="286" x2="196" y2="300"/><line x1="230" y1="286" x2="230" y2="300"/>
-          <line x1="264" y1="286" x2="264" y2="300"/><line x1="640" y1="286" x2="640" y2="300"/>
-          <line x1="676" y1="286" x2="676" y2="300"/><line x1="704" y1="286" x2="704" y2="300"/>
-        </g>
-        <!-- side ladder down to the water (Karan's side) -->
-        <g stroke="#a7bccf" stroke-width="3">
-          <line x1="702" y1="300" x2="712" y2="440"/>
-          <line x1="718" y1="300" x2="726" y2="440"/>
-        </g>
-        <g stroke="#c3d4e6" stroke-width="2.5">
-          <line x1="703" y1="316" x2="719" y2="316"/><line x1="704" y1="332" x2="720" y2="332"/>
-          <line x1="705" y1="348" x2="721" y2="348"/><line x1="706" y1="364" x2="722" y2="364"/>
-          <line x1="707" y1="380" x2="723" y2="380"/><line x1="708" y1="396" x2="724" y2="396"/>
-          <line x1="709" y1="412" x2="725" y2="412"/><line x1="710" y1="428" x2="726" y2="428"/>
-        </g>
-      </g>
-
-      <!-- crew waving on the left of the deck -->
-      <g id="crew">
-        <use href="#crew-m" x="0" y="0" transform="translate(214,286)"/>
-        <use href="#crew-f" x="0" y="0" transform="translate(252,286)"/>
-        <use href="#crew-m" x="0" y="0" transform="translate(292,286)" style="filter:hue-rotate(35deg)"/>
-        <use href="#crew-f" x="0" y="0" transform="translate(332,286)" style="filter:hue-rotate(-30deg)"/>
-        <use href="#crew-m" x="0" y="0" transform="translate(372,286)" style="filter:hue-rotate(-50deg)"/>
-      </g>
-
-      <!-- bye bubble -->
-      <g id="bye-bubble">
-        <path d="M212 150 Q212 138 226 138 L366 138 Q380 138 380 150 L380 176 Q380 188 366 188 L300 188 L288 202 L282 188 L226 188 Q212 188 212 176 Z"
-              fill="#ffffff" stroke="#9fd0e6" stroke-width="2"/>
-        <text x="296" y="168" text-anchor="middle" font-family="'Courier New',monospace" font-size="18" font-weight="700" fill="#0f2b3a">bye Karan! 👋</text>
-      </g>
-
-      <!-- Karan on deck (before he climbs down) -->
-      <use id="karan-deck" href="#karan-tpl" transform="translate(612,196) scale(0.34)"/>
-    </g>
-
-    <!-- ══════════ Karan climbing down the ladder ══════════ -->
-    <g id="karan-climb" class="fade-hide" transform="translate(700,236)">
-      <!-- back view: shirt back, arms up on rungs, bent legs -->
-      <rect x="-9" y="34" width="7" height="20" rx="2" fill="#22304d"/>
-      <rect x="2" y="34" width="7" height="20" rx="2" fill="#22304d"/>
-      <path d="M-11 14 Q-11 8 0 8 Q11 8 11 14 L11 38 L-11 38 Z" fill="#f2f7fb"/>
-      <g stroke="#9cc4e4" stroke-width="3">
-        <line x1="-6" y1="8" x2="-6" y2="38"/><line x1="0" y1="8" x2="0" y2="38"/><line x1="6" y1="8" x2="6" y2="38"/>
-      </g>
-      <path d="M-8 14 L-14 -2" stroke="#c98a5e" stroke-width="5" stroke-linecap="round"/>
-      <path d="M8 14 L14 -2" stroke="#c98a5e" stroke-width="5" stroke-linecap="round"/>
-      <circle cx="0" cy="2" r="9" fill="#191512"/>
-      <circle cx="-7" cy="0" r="6" fill="#191512"/><circle cx="7" cy="0" r="6" fill="#191512"/>
-      <circle cx="0" cy="-5" r="6" fill="#191512"/>
-    </g>
-
-    <!-- ══════════ small boat + Karan (drifts off, then head-zoom) ══════════ -->
-    <g id="depart-boat" transform="translate(0,0)">
-      <g id="boat-inner" class="boat-bob">
-        <!-- Karan standing in the boat (revealed once he lands) -->
-        <use id="karan-boat-fig" class="fade-hide" href="#karan-tpl" transform="translate(590,300) scale(0.42)"/>
-        <!-- the little boat (no logo) -->
-        <path d="M560 424 L800 424 Q792 462 748 466 L612 466 Q568 462 560 424 Z" fill="#5a3a22" stroke="#3d2716" stroke-width="3"/>
-        <path d="M560 424 L800 424 L794 436 L566 436 Z" fill="#6f4a2c"/>
-        <path d="M572 448 Q620 456 680 456 Q740 456 788 448" stroke="#8a5c38" stroke-width="2" fill="none" opacity=".6"/>
-        <!-- oar -->
-        <line x1="612" y1="430" x2="548" y2="404" stroke="#7a5433" stroke-width="4" stroke-linecap="round"/>
-        <ellipse cx="544" cy="402" rx="9" ry="4" fill="#7a5433" transform="rotate(22 544 402)"/>
-        <!-- zoom target over the head (invisible) -->
-        <rect id="zoom-target" x="610" y="308" width="52" height="52" fill="none"/>
-        <!-- wake -->
-        <path d="M556 458 Q520 452 492 460" stroke="#bfe3ff" stroke-width="3" fill="none" opacity=".5" stroke-linecap="round">
-          <animate attributeName="opacity" values=".2;.6;.2" dur="2.4s" repeatCount="indefinite"/>
-        </path>
-      </g>
-    </g>
-  </svg>
-
+      <!-- ══ HULL (drawn after character so he stands *in* the boat) ══ -->
+      <path d="M18 64 L442 64 Q436 92 402 128 Q376 154 326 160 L134 160 Q84 154 58 128 Q24 92 18 64 Z"
+            fill="url(#hullGrad)" stroke="#2a537f" stroke-width="3"/>
+      <path d="M18 64 L442 64 L436 78 L24 78 Z" fill="#2a537f"/>
+      <path d="M26 84 L434 84" stroke="#d9b45b" stroke-width="2.5" opacity=".85"/>
+      <circle cx="150" cy="108" r="7.5" fill="#9fd8ff" stroke="#2a537f" stroke-width="2.5"/>
+      <circle cx="230" cy="112" r="7.5" fill="#9fd8ff" stroke="#2a537f" stroke-width="2.5"/>
+      <circle cx="310" cy="108" r="7.5" fill="#9fd8ff" stroke="#2a537f" stroke-width="2.5"/>
+      <!-- logo plate -->
+      <rect x="168" y="122" width="124" height="30" rx="8" fill="#ffffff"/>
+      <image href="assets/rapidshyp-logo.svg" x="176" y="128" width="108" height="18"/>
+      <!-- wake foam -->
+      <path d="M30 150 Q60 144 92 152" stroke="#bfe3ff" stroke-width="3" fill="none" opacity=".5" stroke-linecap="round">
+        <animate attributeName="opacity" values=".2;.6;.2" dur="2.4s" repeatCount="indefinite"/>
+      </path>
+      <path d="M368 154 Q404 146 432 138" stroke="#bfe3ff" stroke-width="3" fill="none" opacity=".4" stroke-linecap="round">
+        <animate attributeName="opacity" values=".5;.15;.5" dur="2.8s" repeatCount="indefinite"/>
+      </path>
+    </svg>
+  </div>
   <button id="skip-btn">SKIP INTRO ▸▸</button>
 </div>
 
@@ -1389,81 +1298,27 @@ function stageLoginReveal() {
   setTimeout(() => loginInput.focus(), 350);
 }
 
-// rAF tween with a guaranteed-completion safety net: if the tab is
-// backgrounded (rAF frozen), a setTimeout still fires onDone so the
-// intro chain never stalls — it just jumps to the end state unseen.
-function tween(dur, onUpdate, onDone) {
-  let finished = false;
-  const start = performance.now();
-  function finish() { if (finished) return; finished = true; onUpdate(1); if (onDone) onDone(); }
-  (function step() {
-    if (finished) return;
-    const t = Math.min(1, (performance.now() - start) / dur);
-    onUpdate(t);
-    if (t < 1) requestAnimationFrame(step); else finish();
-  })();
-  introTimers.push(setTimeout(finish, dur + 500));
-}
-const easeInOut = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-
-// aim the scale-zoom precisely at the boat-Karan's head
-function zoomIntoHead() {
-  const tgt = document.getElementById('zoom-target');
-  if (tgt) {
-    const r = tgt.getBoundingClientRect();
-    if (r.width) introStage.style.transformOrigin =
-      (r.left + r.width / 2) + 'px ' + (r.top + r.height / 2) + 'px';
-  }
-  introStage.classList.add('zooming');
-}
-
-// Karan: stand on deck → climb down ladder → board boat → drift away
-function runDeparture(done) {
-  const deck  = document.getElementById('karan-deck');
-  const climb = document.getElementById('karan-climb');
-  const boatG = document.getElementById('depart-boat');
-  const shipG = document.getElementById('ship-drift');
-  const TOP = [700, 236], BOT = [706, 360];
-
-  introTimers.push(setTimeout(() => {
-    deck.classList.add('fade-hide');
-    climb.classList.remove('fade-hide');
-    tween(2200, t => {                                   // climb down the ladder
-      const x = TOP[0] + (BOT[0] - TOP[0]) * t + Math.sin(t * Math.PI * 7) * 3;
-      const y = TOP[1] + (BOT[1] - TOP[1]) * t;
-      climb.setAttribute('transform', `translate(${x},${y})`);
-    }, () => {
-      climb.classList.add('fade-hide');
-      document.getElementById('karan-boat-fig').classList.remove('fade-hide');   // he's aboard
-      tween(1800, t => {                                 // boat & ship drift apart
-        const e = easeInOut(t);
-        boatG.setAttribute('transform', `translate(${e * 78},${e * 30})`);
-        shipG.setAttribute('transform', `translate(${e * -150},0)`);
-      }, () => introTimers.push(setTimeout(done, 450)));
-    });
-  }, 1700));
-}
-
 function runIntro() {
   buildNetwork();
   introTimers.push(setTimeout(() => document.getElementById('intro-title').classList.add('show'), 900));
-  runDeparture(() => {
-    zoomIntoHead();                                      // dive into the head
-    introTimers.push(setTimeout(() => introStage.classList.add('gone'), 2300));
-    introTimers.push(setTimeout(() => {
-      runScan(3000, () => {
-        brainIntro.classList.remove('hidden-stage');
-        void brainIntro.offsetWidth;
-        brainIntro.classList.add('show');
-        introTimers.push(setTimeout(() => {
-          brainIntro.classList.add('burst');
-          introTimers.push(setTimeout(() => stageNetworkReveal(false), 160));
-          introTimers.push(setTimeout(() => brainIntro.classList.add('hidden-stage'), 800));
-          introTimers.push(setTimeout(() => stageLoginReveal(), 2100));
-        }, 2100));
-      });
-    }, 900));
-  });
+  // dive into the head
+  introTimers.push(setTimeout(() => introStage.classList.add('zooming'), 4200));
+  // scan the skull
+  introTimers.push(setTimeout(() => {
+    runScan(3000, () => {
+      // reveal the cartoon brain
+      brainIntro.classList.remove('hidden-stage');
+      void brainIntro.offsetWidth;
+      brainIntro.classList.add('show');
+      introTimers.push(setTimeout(() => {
+        brainIntro.classList.add('burst');
+        introTimers.push(setTimeout(() => stageNetworkReveal(false), 160));
+        introTimers.push(setTimeout(() => brainIntro.classList.add('hidden-stage'), 800));
+        introTimers.push(setTimeout(() => stageLoginReveal(), 2100));
+      }, 2100));
+    });
+  }, 5100));
+  introTimers.push(setTimeout(() => introStage.classList.add('gone'), 6500));
 }
 
 function skipIntro() {
