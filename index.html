@@ -590,17 +590,16 @@
         <path d="M114 289 Q114 282 120 282 L134 282 Q144 282 144 288 Q144 295 138 295 L122 295 Q114 295 114 289 Z" fill="#f2f5f9"/>
         <rect x="78" y="291" width="30" height="4" rx="2" fill="#c9d4e2"/>
         <rect x="114" y="291" width="30" height="4" rx="2" fill="#c9d4e2"/>
-        <path d="M62 174 Q66 158 86 153 L102 149 H118 L134 153 Q154 158 158 174 L162 228 Q138 238 110 238 Q82 238 58 228 Z" fill="#f2f7fb"/>
-        <g clip-path="url(#torsoClip)" stroke="#9cc4e4" stroke-width="5">
-          <line x1="70" y1="145" x2="70" y2="242"/>
-          <line x1="84" y1="145" x2="84" y2="242"/>
-          <line x1="98" y1="145" x2="98" y2="242"/>
-          <line x1="112" y1="145" x2="112" y2="242"/>
-          <line x1="126" y1="145" x2="126" y2="242"/>
-          <line x1="140" y1="145" x2="140" y2="242"/>
-          <line x1="154" y1="145" x2="154" y2="242"/>
+        <!-- Real Madrid home jersey (front), white -->
+        <path d="M62 174 Q66 158 86 153 L102 149 H118 L134 153 Q154 158 158 174 L162 228 Q138 238 110 238 Q82 238 58 228 Z" fill="#f6f9fc"/>
+        <path d="M99 150 L110 166 L121 150" fill="none" stroke="#0e2f66" stroke-width="3.6"/>
+        <path d="M102 150 L110 162 L118 150" fill="none" stroke="#c9a23a" stroke-width="1.4"/>
+        <path d="M70 156 Q80 151 90 154 M130 154 Q140 151 150 156" stroke="#c9a23a" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <g transform="translate(134,181)">
+          <path d="M-6 -5 H6 V3 Q6 9 0 11 Q-6 9 -6 3 Z" fill="#0e2f66" stroke="#c9a23a" stroke-width="1"/>
+          <circle cx="0" cy="0" r="3" fill="#f6f9fc"/>
+          <path d="M-3.5 -5 L-3.5 -8 M0 -5 L0 -9 M3.5 -5 L3.5 -8" stroke="#c9a23a" stroke-width="1.3"/>
         </g>
-        <path d="M96 150 L110 163 L124 150 L118 148 L110 156 L102 148 Z" fill="#dbe7f2"/>
         <path d="M84 184 Q97 192 108 185 M112 185 Q123 192 136 184" stroke="#d6e2ee" stroke-width="2.5" fill="none" stroke-linecap="round"/>
         <path d="M66 160 Q52 168 50 190 Q49 204 62 210 L74 214 L78 202 L68 197 Q64 188 68 174 Z" fill="#f2f7fb"/>
         <circle cx="74" cy="208" r="8.5" fill="#c98a5e"/>
@@ -766,20 +765,41 @@
       <use id="karan-deck" href="#karan-tpl" transform="translate(612,196) scale(0.34)"/>
     </g>
 
-    <!-- ══════════ Karan climbing down the ladder ══════════ -->
-    <g id="karan-climb" class="fade-hide" transform="translate(700,236)">
-      <!-- back view: shirt back, arms up on rungs, bent legs -->
-      <rect x="-9" y="34" width="7" height="20" rx="2" fill="#22304d"/>
-      <rect x="2" y="34" width="7" height="20" rx="2" fill="#22304d"/>
-      <path d="M-11 14 Q-11 8 0 8 Q11 8 11 14 L11 38 L-11 38 Z" fill="#f2f7fb"/>
-      <g stroke="#9cc4e4" stroke-width="3">
-        <line x1="-6" y1="8" x2="-6" y2="38"/><line x1="0" y1="8" x2="0" y2="38"/><line x1="6" y1="8" x2="6" y2="38"/>
+    <!-- ══════════ Karan climbing down — back view, RONALDO #7 kit ══════════ -->
+    <g id="karan-climb" class="fade-hide" transform="translate(712,286)">
+      <!-- arms reaching up to grip the rung above -->
+      <path d="M-14 9 L-11 -20" stroke="#c98a5e" stroke-width="7" stroke-linecap="round"/>
+      <path d="M14 9 L11 -20" stroke="#c98a5e" stroke-width="7" stroke-linecap="round"/>
+      <circle cx="-11" cy="-21" r="4.5" fill="#c98a5e"/>
+      <circle cx="11" cy="-21" r="4.5" fill="#c98a5e"/>
+      <!-- back of the curly head -->
+      <g fill="#17130f">
+        <circle cx="0" cy="-8" r="13"/>
+        <circle cx="-10" cy="-6" r="7.5"/><circle cx="10" cy="-6" r="7.5"/>
+        <circle cx="-5" cy="-15" r="7.5"/><circle cx="5" cy="-15" r="7.5"/><circle cx="0" cy="-17" r="6.5"/>
+        <circle cx="-7" cy="-9" r="3.6" fill="#2c2620"/><circle cx="7" cy="-9" r="3.6" fill="#2c2620"/><circle cx="0" cy="-13" r="3.6" fill="#2c2620"/>
       </g>
-      <path d="M-8 14 L-14 -2" stroke="#c98a5e" stroke-width="5" stroke-linecap="round"/>
-      <path d="M8 14 L14 -2" stroke="#c98a5e" stroke-width="5" stroke-linecap="round"/>
-      <circle cx="0" cy="2" r="9" fill="#191512"/>
-      <circle cx="-7" cy="0" r="6" fill="#191512"/><circle cx="7" cy="0" r="6" fill="#191512"/>
-      <circle cx="0" cy="-5" r="6" fill="#191512"/>
+      <!-- neck -->
+      <rect x="-4.5" y="2" width="9" height="8" fill="#b97f55"/>
+      <!-- Real Madrid home jersey (back), white -->
+      <path d="M-18 12 Q-18 6 -9 6 L-4 9 H4 L9 6 Q18 6 18 12 L20 50 Q0 57 -20 50 Z" fill="#f6f9fc" stroke="#d3ddea" stroke-width="1"/>
+      <path d="M-6 8 L0 12 L6 8" fill="none" stroke="#0e2f66" stroke-width="1.8"/>
+      <path d="M-18 13 L-12 13 M18 13 L12 13" stroke="#c9a23a" stroke-width="2.2"/>
+      <!-- short sleeves -->
+      <path d="M-18 13 L-25 22" stroke="#c98a5e" stroke-width="7" stroke-linecap="round"/>
+      <path d="M18 13 L25 22" stroke="#c98a5e" stroke-width="7" stroke-linecap="round"/>
+      <path d="M-18 12 L-25 19 L-18 21 Z" fill="#f6f9fc"/>
+      <path d="M18 12 L25 19 L18 21 Z" fill="#f6f9fc"/>
+      <!-- RONALDO + 7 -->
+      <text x="0" y="24" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" font-weight="800" fill="#0e2f66" letter-spacing=".3">RONALDO</text>
+      <text x="0" y="48" text-anchor="middle" font-family="Arial, sans-serif" font-size="27" font-weight="800" fill="#0e2f66">7</text>
+      <!-- white shorts -->
+      <path d="M-16 50 Q0 56 16 50 L14 67 H3 L0 55 L-3 67 H-14 Z" fill="#ffffff" stroke="#d3ddea" stroke-width="1"/>
+      <!-- legs + boots -->
+      <rect x="-11" y="65" width="8" height="26" rx="2.5" fill="#c98a5e"/>
+      <rect x="3" y="65" width="8" height="26" rx="2.5" fill="#c98a5e"/>
+      <rect x="-12" y="87" width="10" height="9" rx="2" fill="#0e2f66"/>
+      <rect x="2" y="87" width="10" height="9" rx="2" fill="#0e2f66"/>
     </g>
 
     <!-- ══════════ small boat + Karan (drifts off, then head-zoom) ══════════ -->
@@ -1431,12 +1451,12 @@ function runDeparture(done) {
   const climb = document.getElementById('karan-climb');
   const boatG = document.getElementById('depart-boat');
   const shipG = document.getElementById('ship-drift');
-  const TOP = [700, 236], BOT = [706, 360];
+  const TOP = [712, 284], BOT = [714, 360];
 
   introTimers.push(setTimeout(() => {
     deck.classList.add('fade-hide');
     climb.classList.remove('fade-hide');
-    tween(2200, t => {                                   // climb down the ladder
+    tween(2800, t => {                                   // climb down the ladder
       const x = TOP[0] + (BOT[0] - TOP[0]) * t + Math.sin(t * Math.PI * 7) * 3;
       const y = TOP[1] + (BOT[1] - TOP[1]) * t;
       climb.setAttribute('transform', `translate(${x},${y})`);
