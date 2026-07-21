@@ -146,8 +146,6 @@
     0%   { opacity: .45; transform: translate(0,0) scale(.5); }
     100% { opacity: 0;   transform: translate(-26px,-64px) scale(1.9); }
   }
-  #bye-bubble { animation: bubbleFloat 3s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
-  @keyframes bubbleFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
   /* wave rotation pivots are set on the SMIL animateTransform itself (at the
      shoulder joint) — no CSS transform-origin here, or it fights that center */
 
@@ -750,12 +748,6 @@
         <use href="#crew-m" x="0" y="0" transform="translate(372,286)" style="filter:hue-rotate(-50deg)"/>
       </g>
 
-      <!-- bye bubble -->
-      <g id="bye-bubble">
-        <path d="M212 150 Q212 138 226 138 L366 138 Q380 138 380 150 L380 176 Q380 188 366 188 L300 188 L288 202 L282 188 L226 188 Q212 188 212 176 Z"
-              fill="#ffffff" stroke="#9fd0e6" stroke-width="2"/>
-        <text x="296" y="168" text-anchor="middle" font-family="'Courier New',monospace" font-size="18" font-weight="700" fill="#0f2b3a">bye Karan! 👋</text>
-      </g>
 
       <!-- Karan on deck (before he climbs down) -->
       <use id="karan-deck" href="#karan-tpl" transform="translate(612,196) scale(0.34)"/>
