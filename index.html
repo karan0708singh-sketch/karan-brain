@@ -571,6 +571,13 @@
         <stop offset=".55" stop-color="#1b1613" stop-opacity=".85"/>
         <stop offset=".75" stop-color="#1b1613" stop-opacity="1"/>
       </linearGradient>
+      <!-- faded Italian beard gradient (cheeks translucent → solid jaw/chin) -->
+      <linearGradient id="sbf" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0"   stop-color="#2c1f12" stop-opacity=".16"/>
+        <stop offset=".26" stop-color="#26190f" stop-opacity=".5"/>
+        <stop offset=".52" stop-color="#20150c" stop-opacity=".9"/>
+        <stop offset="1"   stop-color="#160e06" stop-opacity="1"/>
+      </linearGradient>
       <clipPath id="torsoClip">
         <path d="M62 174 Q66 158 86 153 L102 149 H118 L134 153 Q154 158 158 174 L162 228 Q138 238 110 238 Q82 238 58 228 Z"/>
       </clipPath>
@@ -607,35 +614,41 @@
           <animateTransform attributeName="transform" type="rotate"
             values="-8 152 170; 10 152 170; -8 152 170" dur="1.3s" repeatCount="indefinite"/>
         </g>
-        <rect x="100" y="130" width="20" height="24" rx="7" fill="#b97f55"/>
-        <g>
-          <circle cx="69" cy="88" r="8" fill="#c98a5e"/>
-          <circle cx="151" cy="88" r="8" fill="#c98a5e"/>
-          <path d="M70 76 Q70 32 110 32 Q150 32 150 76 Q150 106 138 122 Q124 138 110 138 Q96 138 82 122 Q70 106 70 76 Z" fill="#c98a5e"/>
-          <ellipse cx="110" cy="110" rx="42" ry="45" fill="url(#beardFade)"/>
-          <rect x="92" y="102" width="36" height="22" rx="10" fill="#c98a5e"/>
-          <path d="M88 104 Q110 95 132 104 Q126 113 110 111 Q94 113 88 104 Z" fill="#1b1613"/>
-          <path d="M101 119 Q110 124 119 119" stroke="#8a4b32" stroke-width="2.6" fill="none" stroke-linecap="round"/>
-          <path d="M110 86 Q114 96 110 101 Q107 103 105 100" stroke="#b3714a" stroke-width="2.6" fill="none" stroke-linecap="round"/>
-          <g>
-            <path d="M70 76 Q110 66 150 76 L150 84 Q110 74 70 84 Z" fill="#cfd6dd"/>
-            <ellipse cx="92" cy="82" rx="17.5" ry="11.5" fill="#14181d" stroke="#cfd6dd" stroke-width="3.4"/>
-            <ellipse cx="128" cy="82" rx="17.5" ry="11.5" fill="#14181d" stroke="#cfd6dd" stroke-width="3.4"/>
-            <path d="M108 80 Q110 76 112 80" stroke="#cfd6dd" stroke-width="4" fill="none"/>
-            <ellipse cx="86" cy="78" rx="5.5" ry="2.4" fill="#ffffff" opacity=".75" transform="rotate(-14 86 78)">
-              <animate attributeName="opacity" values=".15;.85;.15" dur="2.6s" repeatCount="indefinite"/>
-            </ellipse>
-          </g>
-          <path d="M78 66 Q90 60 102 65" stroke="#1b1613" stroke-width="5" fill="none" stroke-linecap="round"/>
-          <path d="M118 65 Q130 60 142 66" stroke="#1b1613" stroke-width="5" fill="none" stroke-linecap="round"/>
-          <g fill="#191512">
-            <circle cx="80" cy="48" r="15"/><circle cx="97" cy="38" r="16"/><circle cx="115" cy="34" r="16"/>
-            <circle cx="132" cy="40" r="15"/><circle cx="145" cy="52" r="13"/><circle cx="70" cy="60" r="12"/>
-            <circle cx="150" cy="64" r="11"/><circle cx="88" cy="44" r="12"/><circle cx="124" cy="36" r="12"/>
-            <circle cx="106" cy="40" r="13"/>
-            <circle cx="76" cy="52" r="5" fill="#2b2420"/><circle cx="95" cy="41" r="5" fill="#2b2420"/>
-            <circle cx="113" cy="37" r="5" fill="#2b2420"/><circle cx="131" cy="44" r="5" fill="#2b2420"/>
-            <circle cx="144" cy="57" r="4" fill="#2b2420"/>
+        <rect x="100" y="130" width="20" height="26" rx="7" fill="#b97f55"/>
+        <!-- signature head: jawline face + faded Italian beard + chrome shades,
+             scaled from the 240x285 portrait space into this template's head slot -->
+        <g transform="translate(16.4,-5.5) scale(0.78)">
+          <circle cx="75" cy="108" r="9" fill="#c98a5e"/>
+          <circle cx="165" cy="108" r="9" fill="#c98a5e"/>
+          <path d="M80 90 Q80 52 120 50 Q160 52 160 90 Q162 110 153 130 Q144 152 130 168 Q125 179 120 182 Q115 179 110 168 Q96 152 87 130 Q78 110 80 90 Z" fill="#c98a5e"/>
+          <path d="M84 90 Q80 105 87 120" stroke="#231810" stroke-width="10" fill="none" stroke-linecap="round"/>
+          <path d="M156 90 Q160 105 153 120" stroke="#231810" stroke-width="10" fill="none" stroke-linecap="round"/>
+          <path d="M83 103 Q93 118 105 121 Q112 126 120 126 Q128 126 135 121 Q147 118 157 103 Q160 134 147 159 Q131 178 120 184 Q109 178 93 159 Q80 134 83 103 Z" fill="url(#sbf)"/>
+          <path d="M92 137 Q90 152 100 164 Q110 176 120 180 Q130 176 140 164 Q150 152 148 137 Q140 157 120 159 Q100 157 92 137 Z" fill="#1d130a" opacity=".82"/>
+          <path d="M96 120 Q108 113 120 116 Q132 113 144 120 Q138 128 128 127 Q120 124 112 127 Q102 128 96 120 Z" fill="#1d130a"/>
+          <path d="M105 127 Q120 124 135 127 Q134 137 120 138 Q106 137 105 127 Z" fill="#c98a5e"/>
+          <path d="M112 131 Q120 135 128 131" stroke="#7a4a30" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+          <path d="M115 139 Q120 137 125 139 Q123 146 120 146 Q117 146 115 139 Z" fill="#1d130a"/>
+          <path d="M120 98 Q125 114 120 119 Q116 122 112 118" stroke="#b97f55" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M76 88 Q120 75 164 88 L164 96 Q120 83 76 96 Z" fill="#cfd6dd"/>
+          <ellipse cx="99" cy="94" rx="20" ry="13.5" fill="#14181d" stroke="#cfd6dd" stroke-width="3.6"/>
+          <ellipse cx="141" cy="94" rx="20" ry="13.5" fill="#14181d" stroke="#cfd6dd" stroke-width="3.6"/>
+          <path d="M119 91 Q120 87 121 91" stroke="#cfd6dd" stroke-width="4" fill="none"/>
+          <ellipse cx="92" cy="89" rx="6.5" ry="2.6" fill="#ffffff" opacity=".7" transform="rotate(-16 92 89)">
+            <animate attributeName="opacity" values=".2;.8;.2" dur="2.6s" repeatCount="indefinite"/>
+          </ellipse>
+          <ellipse cx="134" cy="89" rx="5.5" ry="2.2" fill="#ffffff" opacity=".55" transform="rotate(-16 134 89)"/>
+          <path d="M90 84 Q102 78 115 83" stroke="#17130f" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+          <path d="M125 83 Q138 78 150 84" stroke="#17130f" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+          <g fill="#17130f">
+            <circle cx="84" cy="48" r="15"/><circle cx="102" cy="38" r="16"/><circle cx="120" cy="34" r="17"/>
+            <circle cx="138" cy="40" r="16"/><circle cx="154" cy="50" r="14"/><circle cx="74" cy="62" r="12"/>
+            <circle cx="164" cy="64" r="11"/><circle cx="92" cy="42" r="12"/><circle cx="128" cy="36" r="12"/>
+            <circle cx="110" cy="37" r="13"/>
+            <circle cx="81" cy="50" r="4.6" fill="#2c2620"/><circle cx="99" cy="40" r="4.8" fill="#2c2620"/>
+            <circle cx="117" cy="36" r="5.1" fill="#2c2620"/><circle cx="135" cy="42" r="4.8" fill="#2c2620"/>
+            <circle cx="151" cy="53" r="4.2" fill="#2c2620"/><circle cx="90" cy="45" r="3.6" fill="#2c2620"/>
+            <circle cx="126" cy="38" r="3.6" fill="#2c2620"/>
           </g>
         </g>
       </g>
