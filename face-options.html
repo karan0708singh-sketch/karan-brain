@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KARAN — face options</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0a0e1a; color: #e7eef7;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    padding: 40px 24px 80px; min-height: 100vh;
+  }
+  .head { max-width: 1100px; margin: 0 auto 36px; text-align: center; }
+  .head h1 { font-size: 26px; letter-spacing: .5px; }
+  .head p { margin-top: 10px; color: #93a4bd; font-size: 14px; line-height: 1.6; }
+  .head .hl { color: #63d3ff; }
+  .grid {
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 22px;
+  }
+  .card {
+    background: linear-gradient(180deg, #12182a, #0d1220);
+    border: 1px solid #23304a; border-radius: 16px;
+    padding: 16px 16px 20px; text-align: center; position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+  .badge {
+    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    width: 30px; height: 30px; border-radius: 50%;
+    background: #63d3ff; color: #04121b; font-weight: 800; font-size: 15px;
+    display: grid; place-items: center;
+    box-shadow: 0 0 16px rgba(99,211,255,.5);
+  }
+  .portrait {
+    background: radial-gradient(ellipse at 50% 35%, #dfeaf6, #b9cbe0);
+    border-radius: 12px; margin-top: 8px; overflow: hidden;
+  }
+  .portrait svg { display: block; width: 100%; height: auto; }
+  .card h3 { margin-top: 14px; font-size: 15px; }
+  .card p { margin-top: 6px; color: #8ea3bd; font-size: 12.5px; line-height: 1.5; }
+  .foot { max-width: 1100px; margin: 34px auto 0; text-align: center; color: #7d90ab; font-size: 13px; line-height: 1.7; }
+  .foot code { background: #17203400; color: #63d3ff; }
+</style>
+</head>
+<body>
+  <div class="head">
+    <h1>Pick Karan's face</h1>
+    <p>Open your photos side by side and choose the <span class="hl">closest resemblance</span>.<br>
+       You can also mix — e.g. "<span class="hl">#3's hair + #1's shades + #4's beard</span>". Just tell me the number(s).</p>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="foot">
+    Once you pick, I'll drop the chosen face into the ship + boat + scan scenes.
+  </div>
+
+<script>
+const HAIR = '#17130f', HI = '#2c2620';
+
+function beardGrad(i) {
+  return `<defs><linearGradient id="bf${i}" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="${HAIR}" stop-opacity=".16"/>
+    <stop offset=".34" stop-color="${HAIR}" stop-opacity=".5"/>
+    <stop offset=".58" stop-color="${HAIR}" stop-opacity=".86"/>
+    <stop offset=".8" stop-color="${HAIR}" stop-opacity="1"/>
+  </linearGradient></defs>`;
+}
+
+const FACES = {
+  oval:  'M78 98 Q78 40 120 40 Q162 40 162 98 Q162 146 146 166 Q131 184 120 184 Q109 184 94 166 Q78 146 78 98 Z',
+  round: 'M72 100 Q72 42 120 42 Q168 42 168 100 Q168 142 151 162 Q133 182 120 182 Q107 182 89 162 Q72 142 72 100 Z',
+  long:  'M82 96 Q82 40 120 40 Q158 40 158 96 Q158 150 144 170 Q131 187 120 187 Q109 187 96 170 Q82 150 82 96 Z',
+  square:'M75 98 Q75 42 120 42 Q165 42 165 98 Q165 150 151 166 L143 177 Q132 183 120 183 Q108 183 97 177 L89 166 Q75 150 75 98 Z'
+};
+
+function hair(style) {
+  let pts;
+  if (style === 'tall')      pts = [[86,42,15],[104,30,17],[122,26,17],[142,30,16],[158,44,14],[74,60,12],[166,62,12],[95,34,13],[132,28,13],[113,30,14]];
+  else if (style === 'fade') pts = [[88,48,14],[106,40,15],[122,36,15],[140,40,15],[156,50,13],[80,66,8],[160,66,8],[98,42,12],[130,38,12],[114,38,13]];
+  else                       pts = [[84,48,15],[102,38,16],[120,34,17],[138,40,16],[154,50,14],[74,62,12],[164,64,11],[92,42,12],[128,36,12],[110,37,13]];
+  let g = '<g fill="' + HAIR + '">';
+  pts.forEach(p => g += `<circle cx="${p[0]}" cy="${p[1]}" r="${p[2]}"/>`);
+  pts.slice(0, 7).forEach(p => g += `<circle cx="${p[0]-3}" cy="${p[1]+2}" r="${Math.max(3, p[2]*0.3).toFixed(1)}" fill="${HI}"/>`);
+  g += '</g>';
+  return g;
+}
+
+function mouth(skin, smile) {
+  let m = `<rect x="100" y="120" width="40" height="24" rx="11" fill="${skin}"/>`;
+  m += `<path d="M96 122 Q120 111 144 122 Q137 132 120 130 Q103 132 96 122 Z" fill="${HAIR}"/>`;
+  m += `<path d="${smile ? 'M107 134 Q120 145 133 134' : 'M108 136 Q120 141 132 136'}" stroke="#7a4a30" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+  return m;
+}
+
+function beard(style, skin, i) {
+  if (style === 'stubble') {
+    return `<path d="M82 116 Q82 150 104 166 Q114 174 120 174 Q126 174 136 166 Q158 150 158 116 Q156 150 140 168 Q130 178 120 178 Q110 178 100 168 Q84 150 82 116 Z" fill="${HAIR}" opacity=".3"/>` + mouth(skin, false);
+  }
+  const map = { full:{cy:140,rx:47,ry:50}, fuller:{cy:145,rx:50,ry:58}, groomed:{cy:138,rx:43,ry:44} };
+  const b = map[style] || map.full;
+  let g = `<path d="M78 94 Q75 122 90 144 M162 94 Q165 122 150 144" stroke="${HAIR}" stroke-width="11" fill="none" opacity=".55" stroke-linecap="round"/>`;
+  g += `<ellipse cx="120" cy="${b.cy}" rx="${b.rx}" ry="${b.ry}" fill="url(#bf${i})"/>`;
+  return g + mouth(skin, style === 'fuller');
+}
+
+function eyes(smile) {
+  const sq = smile ? 2 : 0;
+  return `<g>
+    <path d="M92 94 Q102 ${87+sq} 114 94 Q103 100 93 96 Z" fill="#fff"/>
+    <path d="M126 94 Q138 ${87+sq} 148 94 Q139 100 127 96 Z" fill="#fff"/>
+    <circle cx="104" cy="95" r="3.9" fill="#241a10"/><circle cx="136" cy="95" r="3.9" fill="#241a10"/>
+    <circle cx="105.3" cy="93.6" r="1.1" fill="#fff"/><circle cx="137.3" cy="93.6" r="1.1" fill="#fff"/>
+  </g>`;
+}
+
+function brows(style) {
+  if (style === 'sharp')
+    return `<path d="M90 82 L115 79" stroke="${HAIR}" stroke-width="6" stroke-linecap="round"/><path d="M125 79 L150 82" stroke="${HAIR}" stroke-width="6" stroke-linecap="round"/>`;
+  return `<path d="M90 84 Q102 78 115 83" stroke="${HAIR}" stroke-width="6.5" fill="none" stroke-linecap="round"/><path d="M125 83 Q138 78 150 84" stroke="${HAIR}" stroke-width="6.5" fill="none" stroke-linecap="round"/>`;
+}
+
+function shades() {
+  return `<g>
+    <path d="M76 88 Q120 75 164 88 L164 96 Q120 83 76 96 Z" fill="#cfd6dd"/>
+    <ellipse cx="99" cy="94" rx="20" ry="13.5" fill="#14181d" stroke="#cfd6dd" stroke-width="3.6"/>
+    <ellipse cx="141" cy="94" rx="20" ry="13.5" fill="#14181d" stroke="#cfd6dd" stroke-width="3.6"/>
+    <path d="M119 91 Q120 87 121 91" stroke="#cfd6dd" stroke-width="4" fill="none"/>
+    <ellipse cx="92" cy="89" rx="6.5" ry="2.6" fill="#fff" opacity=".72" transform="rotate(-16 92 89)"/>
+    <ellipse cx="134" cy="89" rx="5.5" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-16 134 89)"/>
+  </g>`;
+}
+
+function buildFace(cfg, i) {
+  const skin = cfg.skin || '#bd824f', skinD = cfg.skinD || '#a06f42';
+  let s = beardGrad(i);
+  // shirt + neck + ears + face
+  s += `<path d="M34 285 Q34 228 86 217 L102 211 H138 L154 217 Q206 228 206 285 Z" fill="${cfg.shirt || '#eef4fb'}"/>`;
+  if (cfg.stripes) {
+    s += '<g clip-path="url(#sh' + i + ')" stroke="#b7d2ea" stroke-width="6">';
+    for (let x = 60; x <= 180; x += 14) s += `<line x1="${x}" y1="210" x2="${x}" y2="285"/>`;
+    s += '</g><clipPath id="sh' + i + '"><path d="M34 285 Q34 228 86 217 L102 211 H138 L154 217 Q206 228 206 285 Z"/></clipPath>';
+  }
+  s += `<path d="M104 176 h32 v26 q0 12 -16 12 q-16 0 -16 -12 Z" fill="${skinD}"/>`;
+  s += `<circle cx="74" cy="112" r="9" fill="${skin}"/><circle cx="166" cy="112" r="9" fill="${skin}"/>`;
+  s += `<path d="${FACES[cfg.face || 'oval']}" fill="${skin}"/>`;
+  if (cfg.cheeks) s += `<ellipse cx="94" cy="120" rx="10" ry="7" fill="${skinD}" opacity=".22"/><ellipse cx="146" cy="120" rx="10" ry="7" fill="${skinD}" opacity=".22"/>`;
+  s += beard(cfg.beard, skin, i);
+  s += `<path d="M120 96 Q125 115 120 121 Q116 124 112 120" stroke="${skinD}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  if (cfg.shades) { s += shades(); s += brows(cfg.brow); }
+  else { s += eyes(cfg.smile); s += brows(cfg.brow); }
+  s += hair(cfg.hair);
+  return `<svg viewBox="0 0 240 285">${s}</svg>`;
+}
+
+const OPTIONS = [
+  { cfg: { face:'oval', hair:'full', beard:'full', shades:true, brow:'straight', stripes:true },
+    title: 'The Signature', desc: 'Your everyday look — chrome wraparound shades, full curls, faded beard.' },
+  { cfg: { face:'oval', hair:'full', beard:'full', shades:false, brow:'straight' },
+    title: 'Eyes Out', desc: 'Same hair & beard, no shades — thick straight brows, calm gaze.' },
+  { cfg: { face:'round', hair:'tall', beard:'fuller', shades:false, brow:'straight', smile:true, shirt:'#eef4fb' },
+    title: 'Fuller & Friendly', desc: 'Rounder face, taller curls, fuller beard, slight smile.' },
+  { cfg: { face:'long', hair:'fade', beard:'groomed', shades:false, brow:'sharp' },
+    title: 'Lean & Sharp', desc: 'Longer face, side-fade curls, groomed beard, sharper brows.' },
+  { cfg: { face:'square', hair:'fade', beard:'full', shades:false, brow:'straight', cheeks:true },
+    title: 'Strong Jaw', desc: 'Square jaw, cheek shading, full beard with fade — most realistic.' },
+];
+
+const grid = document.getElementById('grid');
+OPTIONS.forEach((o, idx) => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML =
+    `<div class="badge">${idx + 1}</div>
+     <div class="portrait">${buildFace(o.cfg, idx + 1)}</div>
+     <h3>${o.title}</h3>
+     <p>${o.desc}</p>`;
+  grid.appendChild(card);
+});
+</script>
+</body>
+</html>
