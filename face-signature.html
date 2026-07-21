@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KARAN — Signature vs photo</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0a0e1a; color: #e7eef7;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 40px 24px 80px; min-height: 100vh; text-align: center;
+  }
+  h1 { font-size: 24px; }
+  .sub { margin-top: 10px; color: #93a4bd; font-size: 14px; }
+  .row {
+    margin: 40px auto 0; max-width: 820px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 26px; align-items: end;
+  }
+  .pane { background: linear-gradient(180deg,#12182a,#0d1220); border:1px solid #23304a; border-radius:16px; padding:16px; }
+  .pane .lbl { font-size:13px; letter-spacing:2px; color:#63d3ff; margin-bottom:12px; }
+  .pane img { width:100%; border-radius:12px; display:block; }
+  .frame { background: radial-gradient(ellipse at 50% 34%, #dfeaf6, #b9cbe0); border-radius:12px; overflow:hidden; }
+  .frame svg { display:block; width:100%; height:auto; }
+  @media (max-width:640px){ .row{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+  <h1>Signature look — matching your beard</h1>
+  <div class="sub">Left: your photo · Right: the cartoon. Tell me what to tweak (density, length, cheek line, chin).</div>
+  <div class="row">
+    <div class="pane">
+      <div class="lbl">YOUR PHOTO</div>
+      <img src="assets/face.jpg" alt="reference">
+    </div>
+    <div class="pane">
+      <div class="lbl">CARTOON</div>
+      <div class="frame" id="frame"></div>
+    </div>
+  </div>
+
+<script>
+const HAIR = '#17130f', HI = '#2c2620', SKIN = '#bd824f', SKIND = '#a06f42';
+
+function hairFull() {
+  const pts = [[84,48,15],[102,38,16],[120,34,17],[138,40,16],[154,50,14],[74,62,12],[164,64,11],[92,42,12],[128,36,12],[110,37,13]];
+  let g = '<g fill="' + HAIR + '">';
+  pts.forEach(p => g += `<circle cx="${p[0]}" cy="${p[1]}" r="${p[2]}"/>`);
+  pts.slice(0, 7).forEach(p => g += `<circle cx="${p[0]-3}" cy="${p[1]+2}" r="${Math.max(3,p[2]*0.3).toFixed(1)}" fill="${HI}"/>`);
+  return g + '</g>';
+}
+
+function shades() {
+  return `<g>
+    <path d="M76 88 Q120 75 164 88 L164 96 Q120 83 76 96 Z" fill="#cfd6dd"/>
+    <ellipse cx="99" cy="94" rx="20" ry="13.5" fill="#14181d" stroke="#cfd6dd" stroke-width="3.6"/>
+    <ellipse cx="141" cy="94" rx="20" ry="13.5" fill="#14181d" stroke="#cfd6dd" stroke-width="3.6"/>
+    <path d="M119 91 Q120 87 121 91" stroke="#cfd6dd" stroke-width="4" fill="none"/>
+    <ellipse cx="92" cy="89" rx="6.5" ry="2.6" fill="#fff" opacity=".7" transform="rotate(-16 92 89)"/>
+    <ellipse cx="134" cy="89" rx="5.5" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-16 134 89)"/>
+  </g>`;
+}
+
+// faded Italian beard: hugs a real jawline down to the V-chin,
+// stubble on the cheeks fading into a solid, crisp jaw + chin
+function sigBeard() {
+  const C = '#1d130a';
+  let s = `<defs>
+    <linearGradient id="sbf" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2c1f12" stop-opacity=".16"/>
+      <stop offset=".26" stop-color="#26190f" stop-opacity=".5"/>
+      <stop offset=".52" stop-color="#20150c" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#160e06" stop-opacity="1"/>
+    </linearGradient>
+  </defs>`;
+  // sideburns overlapping the beard top so there's no gap
+  s += `<path d="M84 90 Q80 105 87 120" stroke="#231810" stroke-width="10" fill="none" stroke-linecap="round"/>`;
+  s += `<path d="M156 90 Q160 105 153 120" stroke="#231810" stroke-width="10" fill="none" stroke-linecap="round"/>`;
+  // ONE continuous beard: cheeks fade via the gradient (skin shows through),
+  // solidifying down a jaw-hugging silhouette to the V-chin — no dots
+  s += `<path d="M83 103 Q93 118 105 121 Q112 126 120 126 Q128 126 135 121 Q147 118 157 103
+             Q160 134 147 159 Q131 178 120 184 Q109 178 93 159 Q80 134 83 103 Z" fill="url(#sbf)"/>`;
+  // denser core at the jaw + chin (the full lower Italian beard)
+  s += `<path d="M92 137 Q90 152 100 164 Q110 176 120 180 Q130 176 140 164 Q150 152 148 137 Q140 157 120 159 Q100 157 92 137 Z" fill="${C}" opacity=".82"/>`;
+  // moustache, corners tucking into the beard
+  s += `<path d="M96 120 Q108 113 120 116 Q132 113 144 120 Q138 128 128 127 Q120 124 112 127 Q102 128 96 120 Z" fill="${C}"/>`;
+  // mouth window (skin) + lips
+  s += `<path d="M105 127 Q120 124 135 127 Q134 137 120 138 Q106 137 105 127 Z" fill="${SKIN}"/>`;
+  s += `<path d="M112 131 Q120 135 128 131" stroke="#7a4a30" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+  // soul patch under the lip
+  s += `<path d="M115 139 Q120 137 125 139 Q123 146 120 146 Q117 146 115 139 Z" fill="${C}"/>`;
+  return s;
+}
+
+function build() {
+  let s = '';
+  // shirt + neck + ears + face
+  s += `<path d="M34 285 Q34 228 86 217 L102 211 H138 L154 217 Q206 228 206 285 Z" fill="#eef4fb"/>`;
+  s += '<g clip-path="url(#sh)" stroke="#b7d2ea" stroke-width="6">';
+  for (let x = 60; x <= 180; x += 14) s += `<line x1="${x}" y1="210" x2="${x}" y2="285"/>`;
+  s += '</g><clipPath id="sh"><path d="M34 285 Q34 228 86 217 L102 211 H138 L154 217 Q206 228 206 285 Z"/></clipPath>';
+  s += `<path d="M108 180 h24 v15 q0 9 -12 9 q-12 0 -12 -9 Z" fill="${SKIND}"/>`;
+  s += `<circle cx="75" cy="108" r="9" fill="${SKIN}"/><circle cx="165" cy="108" r="9" fill="${SKIN}"/>`;
+  // masculine face: cheekbones widest ~y100, jaw tapers to a V-chin at (120,182)
+  s += `<path d="M80 90 Q80 52 120 50 Q160 52 160 90 Q162 110 153 130 Q144 152 130 168 Q125 179 120 182 Q115 179 110 168 Q96 152 87 130 Q78 110 80 90 Z" fill="${SKIN}"/>`;
+  s += sigBeard();
+  // nose (between shades and moustache)
+  s += `<path d="M120 98 Q125 114 120 119 Q116 122 112 118" stroke="${SKIND}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  s += shades();
+  s += `<path d="M90 84 Q102 78 115 83" stroke="${HAIR}" stroke-width="6.5" fill="none" stroke-linecap="round"/>`;
+  s += `<path d="M125 83 Q138 78 150 84" stroke="${HAIR}" stroke-width="6.5" fill="none" stroke-linecap="round"/>`;
+  s += hairFull();
+  document.getElementById('frame').innerHTML = `<svg viewBox="0 0 240 285">${s}</svg>`;
+}
+build();
+</script>
+</body>
+</html>
