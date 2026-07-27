@@ -1080,19 +1080,20 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 // ── the 13 components mounted on Karan's motherboard ────────
 // coords in the 1600x900 board space, ringed around the CPU
 const STOPS = [
-  { x: 420,  y: 620, label: 'GYM',            icon: '🏋️' },
-  { x: 360,  y: 480, label: 'SWIMMING',       icon: '🏊' },
-  { x: 370,  y: 340, label: 'FOOTBALL',       icon: '⚽' },
-  { x: 470,  y: 250, label: 'GUITAR',         icon: '🎸' },
-  { x: 630,  y: 185, label: 'WORK',           icon: '💼' },
-  { x: 810,  y: 165, label: 'QA FOLLOW-UPS',  icon: '🔁' },
-  { x: 990,  y: 195, label: 'SPRINT MGMT',    icon: '🏃' },
-  { x: 1130, y: 270, label: 'PEOPLE MGMT',    icon: '👥' },
-  { x: 1230, y: 390, label: 'ROADMAP PLANNING', icon: '🗺️' },
-  { x: 1220, y: 520, label: 'SCOPING',        icon: '✂️' },
-  { x: 1100, y: 610, label: 'SPRINT KT',      icon: '📚' },
-  { x: 920,  y: 660, label: 'LIVE GYAAN SESSION COUNTER', icon: '🗣️' },
-  { x: 650,  y: 665, label: 'CAFFEINE SHOP',  icon: '☕' },
+  { x: 560,  y: 190, label: 'OVERTHINKING LOBE',      icon: '🌀' },
+  { x: 700,  y: 158, label: 'CRINGE ARCHIVE',         icon: '😬' },
+  { x: 880,  y: 158, label: 'SONG ON LOOP',           icon: '🎵' },
+  { x: 1020, y: 190, label: 'INTRUSIVE THOUGHTS',     icon: '😈' },
+  { x: 1195, y: 300, label: 'WORST-CASE SIMULATOR',   icon: '🎬' },
+  { x: 1258, y: 452, label: 'SNACK RADAR',            icon: '🍪' },
+  { x: 1178, y: 588, label: 'PROCRASTINATION CORTEX', icon: '⏳' },
+  { x: 1025, y: 655, label: 'NAME RECALL: FAILED',    icon: '🫥' },
+  { x: 885,  y: 690, label: 'DOPAMINE SLOT MACHINE',  icon: '🎰' },
+  { x: 725,  y: 690, label: 'GRUDGE STORAGE',         icon: '🗄️' },
+  { x: 585,  y: 662, label: 'SIUUU REFLEX',           icon: '⚽' },
+  { x: 408,  y: 588, label: 'CAFFEINE CRAVING CENTER', icon: '☕' },
+  { x: 338,  y: 448, label: 'STUNTS TO PULL OFF',     icon: '🤸' },
+  { x: 395,  y: 300, label: 'SKILL UPDATE: 0%',       icon: '📥' },
 ];
 
 const CPU = { x1: 726, y1: 381, x2: 874, y2: 479, cx: 800, cy: 430 };
@@ -1243,7 +1244,8 @@ function buildNetwork() {
     outer.setAttribute('transform', `translate(${s.x}, ${s.y})`);
     const g = document.createElementNS(SVG_NS, 'g');
     g.setAttribute('class', 'stop-node');
-    const above = i % 2 === 0;
+    // keep labels inside the brain: bottom nodes label above, top nodes below
+    const above = s.y > 560 ? true : (s.y < 210 ? false : i % 2 === 0);
     const labelY = above ? -30 : 42;
     const iconY  = above ? -13 : 27;
     g.innerHTML = `
