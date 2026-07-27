@@ -440,6 +440,20 @@
   #login-msg { margin-top: 13px; min-height: 34px; font-size: 12.5px; line-height: 1.5; color: var(--red); }
   #login-msg .guest-link { color: var(--amber); cursor: pointer; text-decoration: underline; }
 
+  /* disambiguation picker (multiple people share a first name) */
+  #picker-prompt { color: #aeeeff !important; margin-top: 4px; }
+  #picker-list { margin-top: 16px; display: grid; gap: 10px; }
+  .picker-opt {
+    width: 100%; text-align: center;
+    background: rgba(53,224,255,.08);
+    border: 1px solid rgba(61,220,255,.35); border-radius: 10px;
+    color: #dff2fb; font-family: inherit; font-size: 15px; letter-spacing: .5px;
+    padding: 13px 16px; cursor: pointer; transition: all .15s;
+  }
+  .picker-opt:hover { background: rgba(53,224,255,.18); border-color: var(--cyan); transform: translateY(-1px); box-shadow: 0 0 16px rgba(53,224,255,.25); }
+  .picker-back { margin-top: 15px; font-size: 12px; letter-spacing: .5px; color: #7f95b5; cursor: pointer; }
+  .picker-back:hover { color: #aeeeff; }
+
   /* ════════════════════════════════════════════════════════
      SCENE 4 — the terminal (original KARAN.BRAIN)
      ════════════════════════════════════════════════════════ */
@@ -985,9 +999,16 @@
     <div class="lc-brand">◉ NEURAL ACCESS GATEWAY</div>
     <h1>KARAN.BRAIN</h1>
     <div class="lc-sub">Let's see how well you know Karan —<br><b style="color:#aeeeff">BEFORE</b> you hear what Karan thinks about <b style="color:#aeeeff">YOU</b>.</div>
-    <input id="login-input" type="text" placeholder="your first name" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="40">
-    <button id="login-btn">REQUEST ACCESS</button>
-    <div id="login-msg"></div>
+    <div id="login-form">
+      <input id="login-input" type="text" placeholder="your first name" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="40">
+      <button id="login-btn">REQUEST ACCESS</button>
+      <div id="login-msg"></div>
+    </div>
+    <div id="login-picker" style="display:none">
+      <div class="lc-sub" id="picker-prompt">More than one match — which one are you?</div>
+      <div id="picker-list"></div>
+      <div class="picker-back" id="picker-back">← that's not me, go back</div>
+    </div>
   </div>
 
   <div id="quiz-card">
@@ -1029,7 +1050,7 @@
 // Keys are lowercase first names. Replace via build_users.js + CSV.
 // ════════════════════════════════════════════════════════════
 /*USERS_B64_START*/
-const USERS_B64 = "eyJyYWh1bCI6eyJuYW1lIjoiUmFodWwiLCJtZW1vcnkiOiJSYWh1bCwgS2FyYW4ncyBicmFpbiBoYXMgeW91IGZpbGVkIHVuZGVyICdwZW9wbGUgd2hvIGFjdHVhbGx5IHJlYWQgdGhlIFBSRCcuIFRoYXQgZm9sZGVyIGhhcyBleGFjdGx5IG9uZSBmaWxlIGluIGl0LiBUaGFuayB5b3UgZm9yIGV2ZXJ5IGxhdGUtbmlnaHQgZGVidWcgc2Vzc2lvbiBhbmQgZm9yIG5ldmVyIHNheWluZyAnd29ya3Mgb24gbXkgbWFjaGluZScgd2l0aG91dCBhdCBsZWFzdCBjaGVja2luZyB0d2ljZS4ifSwicHJpeWEiOnsibmFtZSI6IlByaXlhIiwibWVtb3J5IjoiUHJpeWEsIHN0b3JlZCBpbiBsb25nLXRlcm0gbWVtb3J5OiB0aGUgZGF5IHlvdSBkZWZlbmRlZCB0aGUgZGVzaWduIGluIGZyb250IG9mIGZpdmUgc3Rha2Vob2xkZXJzIHdpdGggb25lIHNsaWRlLiBLYXJhbidzIGJyYWluIHN0aWxsIHJlZmVyZW5jZXMgaXQgd2hlbiBpdCBuZWVkcyBjb3VyYWdlLiBLZWVwIGJlaW5nIHRoZSBsb3VkZXN0IHZvaWNlIGZvciB0aGUgdXNlciBpbiBldmVyeSByb29tLiJ9LCJhbWl0Ijp7Im5hbWUiOiJBbWl0IiwibWVtb3J5IjoiQW1pdCwgS2FyYW4ncyBicmFpbiBhbGxvY2F0ZWQgYW4gZW50aXJlIHNlY3RvciB0byB5b3VyIG9uZS1saW5lcnMgaW4gc3ByaW50IHJldmlld3MuIENvbXByZXNzaW9uIGZhaWxlZCAtLSB0aGV5J3JlIGFsbCBrZXBlcnMuIFRoYW5rcyBmb3IgbWFraW5nIHNoaXBwaW5nIGZlZWwgbGlnaHRlciB0aGFuIGl0IGhhZCBhbnkgcmlnaHQgdG8gYmUuIn0sInNuZWhhIjp7Im5hbWUiOiJTbmVoYSIsIm1lbW9yeSI6IlNuZWhhLCB0aGUgYnJhaW4gbG9ncyBzaG93IDQ3IGluc3RhbmNlcyBvZiAnYXNrIFNuZWhhLCBzaGUnbGwga25vdycuIEFjY3VyYWN5IHJhdGU6IDEwMCUuIFlvdSB3ZXJlIHRoZSByZWFsIGRvY3VtZW50YXRpb24gYWxsIGFsb25nLiJ9LCJ2aWtyYW0iOnsibmFtZSI6IlZpa3JhbSIsIm1lbW9yeSI6IlZpa3JhbSwgbWVtb3J5IGZyYWdtZW50IGRlY3J5cHRlZDogdGhhdCByZWxlYXNlIG5pZ2h0IHdoZW4gZXZlcnl0aGluZyBicm9rZSBhbmQgeW91IGp1c3Qgc2FpZCAnY2hhbG8sIGZpeCBrYXJ0ZSBoYWluJy4gS2FyYW4ncyBicmFpbiBtYXJrZWQgdGhhdCBhcyB0aGUgZGVmaW5pdGlvbiBvZiBhIGdvb2QgdGVhbW1hdGUuIn0sInRhbnZpIjp7Im5hbWUiOiJUYW52aSIsIm1lbW9yeSI6IlRhbnZpLCBLYXJhbidzIGJyYWluIGtlcHQgZXZlcnkgJ3doYXQgaWYgd2UganVzdC4uLicgeW91IGV2ZXIgc2FpZCBpbiBicmFpbnN0b3Jtcy4gSGFsZiB0aGUgcm9hZG1hcCBzdGFydGVkIHdpdGggdGhvc2Ugd29yZHMuIE5ldmVyIHN0b3AgYXNraW5nIHRoZW0uIn0sImd1ZXN0Ijp7Im5hbWUiOiJHdWVzdCIsIm1lbW9yeSI6Ik5vIHBlcnNvbmFsIGZpbGUgZm91bmQgLS0gYnV0IGlmIHlvdSdyZSBwb2tpbmcgYXJvdW5kIEthcmFuJ3MgYnJhaW4sIHlvdSBjbGVhcmx5IG1hdHRlcmVkIGVub3VnaCB0byBnZXQgdGhlIGxpbmsuIFRoYW5rIHlvdSBmb3IgYmVpbmcgcGFydCBvZiB0aGUgam91cm5leS4gU3RheSBpbiB0b3VjaCAtLSB0aGUgYnJhaW4gbWF5IGJlIGxlYXZpbmcgdGhlIGJ1aWxkaW5nLCBidXQgaXQncyBzdGlsbCBvbmxpbmUuIn19";
+const USERS_B64 = "eyJyYWh1bCI6eyJuYW1lIjoiUmFodWwiLCJtZW1vcnkiOiJSYWh1bCwgS2FyYW4ncyBicmFpbiBoYXMgeW91IGZpbGVkIHVuZGVyICdwZW9wbGUgd2hvIGFjdHVhbGx5IHJlYWQgdGhlIFBSRCcuIFRoYXQgZm9sZGVyIGhhcyBleGFjdGx5IG9uZSBmaWxlIGluIGl0LiBUaGFuayB5b3UgZm9yIGV2ZXJ5IGxhdGUtbmlnaHQgZGVidWcgc2Vzc2lvbiBhbmQgZm9yIG5ldmVyIHNheWluZyAnd29ya3Mgb24gbXkgbWFjaGluZScgd2l0aG91dCBhdCBsZWFzdCBjaGVja2luZyB0d2ljZS4ifSwicHJpeWEiOnsibmFtZSI6IlByaXlhIiwibWVtb3J5IjoiUHJpeWEsIHN0b3JlZCBpbiBsb25nLXRlcm0gbWVtb3J5OiB0aGUgZGF5IHlvdSBkZWZlbmRlZCB0aGUgZGVzaWduIGluIGZyb250IG9mIGZpdmUgc3Rha2Vob2xkZXJzIHdpdGggb25lIHNsaWRlLiBLYXJhbidzIGJyYWluIHN0aWxsIHJlZmVyZW5jZXMgaXQgd2hlbiBpdCBuZWVkcyBjb3VyYWdlLiBLZWVwIGJlaW5nIHRoZSBsb3VkZXN0IHZvaWNlIGZvciB0aGUgdXNlciBpbiBldmVyeSByb29tLiJ9LCJhbWl0Ijp7Im5hbWUiOiJBbWl0IiwibWVtb3J5IjoiQW1pdCwgS2FyYW4ncyBicmFpbiBhbGxvY2F0ZWQgYW4gZW50aXJlIHNlY3RvciB0byB5b3VyIG9uZS1saW5lcnMgaW4gc3ByaW50IHJldmlld3MuIENvbXByZXNzaW9uIGZhaWxlZCAtLSB0aGV5J3JlIGFsbCBrZXBlcnMuIFRoYW5rcyBmb3IgbWFraW5nIHNoaXBwaW5nIGZlZWwgbGlnaHRlciB0aGFuIGl0IGhhZCBhbnkgcmlnaHQgdG8gYmUuIn0sInNuZWhhIjp7Im5hbWUiOiJTbmVoYSIsIm1lbW9yeSI6IlNuZWhhLCB0aGUgYnJhaW4gbG9ncyBzaG93IDQ3IGluc3RhbmNlcyBvZiAnYXNrIFNuZWhhLCBzaGUnbGwga25vdycuIEFjY3VyYWN5IHJhdGU6IDEwMCUuIFlvdSB3ZXJlIHRoZSByZWFsIGRvY3VtZW50YXRpb24gYWxsIGFsb25nLiJ9LCJ2aWtyYW0iOnsibmFtZSI6IlZpa3JhbSIsIm1lbW9yeSI6IlZpa3JhbSwgbWVtb3J5IGZyYWdtZW50IGRlY3J5cHRlZDogdGhhdCByZWxlYXNlIG5pZ2h0IHdoZW4gZXZlcnl0aGluZyBicm9rZSBhbmQgeW91IGp1c3Qgc2FpZCAnY2hhbG8sIGZpeCBrYXJ0ZSBoYWluJy4gS2FyYW4ncyBicmFpbiBtYXJrZWQgdGhhdCBhcyB0aGUgZGVmaW5pdGlvbiBvZiBhIGdvb2QgdGVhbW1hdGUuIn0sInRhbnZpIjp7Im5hbWUiOiJUYW52aSIsIm1lbW9yeSI6IlRhbnZpLCBLYXJhbidzIGJyYWluIGtlcHQgZXZlcnkgJ3doYXQgaWYgd2UganVzdC4uLicgeW91IGV2ZXIgc2FpZCBpbiBicmFpbnN0b3Jtcy4gSGFsZiB0aGUgcm9hZG1hcCBzdGFydGVkIHdpdGggdGhvc2Ugd29yZHMuIE5ldmVyIHN0b3AgYXNraW5nIHRoZW0uIn0sImd1ZXN0Ijp7Im5hbWUiOiJHdWVzdCIsIm1lbW9yeSI6Ik5vIHBlcnNvbmFsIGZpbGUgZm91bmQgLS0gYnV0IGlmIHlvdSdyZSBwb2tpbmcgYXJvdW5kIEthcmFuJ3MgYnJhaW4sIHlvdSBjbGVhcmx5IG1hdHRlcmVkIGVub3VnaCB0byBnZXQgdGhlIGxpbmsuIFRoYW5rIHlvdSBmb3IgYmVpbmcgcGFydCBvZiB0aGUgam91cm5leS4gU3RheSBpbiB0b3VjaCAtLSB0aGUgYnJhaW4gbWF5IGJlIGxlYXZpbmcgdGhlIGJ1aWxkaW5nLCBidXQgaXQncyBzdGlsbCBvbmxpbmUuIn0sInNodWJoYW0tYmhhbmdlIjp7Im5hbWUiOiJTaHViaGFtIEJoYW5nZSIsIm1lbW9yeSI6IlNodWJoYW0gQmhhbmdlLCBLYXJhbidzIGJyYWluIGhhcyB5b3UgdGFnZ2VkIGFzIHRoZSBvbmUgd2hvIGNvdWxkIHR1cm4gYW55IGJ1ZyBpbnRvIGEgNDAtbWludXRlIHBoaWxvc29waGljYWwgZGViYXRlIOKAlCBhbmQgc29tZWhvdyBhbHdheXMgYmUgcmlnaHQuIFRoYW5rcyBmb3IgbWFraW5nIFVBVCBsZXNzIGxvbmVseS4ifSwic2h1YmhhbS1rdW1hciI6eyJuYW1lIjoiU2h1YmhhbSBLdW1hciIsIm1lbW9yeSI6IlNodWJoYW0gS3VtYXIsIG1lbW9yeSBmcmFnbWVudCByZXN0b3JlZDogdGhlIGRlYWRsaW5lcyB5b3UgcXVpZXRseSByZXNjdWVkIHdoaWxlIGV2ZXJ5b25lIGVsc2Ugd2FzIHN0aWxsIGluIHRoZSBzeW5jIGNhbGwuIEthcmFuJ3MgYnJhaW4gbWFya2VkIHlvdSBhcyAndGhlIGNhbG0gb25lJy4gU3RheSBleGFjdGx5IHRoYXQuIn19";
 /*USERS_B64_END*/
 
 const USERS = JSON.parse(decodeURIComponent(escape(atob(USERS_B64))));
@@ -1512,22 +1533,67 @@ skipBtn.addEventListener('click', skipIntro);
 // ── login logic ─────────────────────────────────────────────
 let loginFails = 0;
 
-function findUser(raw) {
-  const full = raw.trim().toLowerCase();
-  if (USERS[full]) return full;
-  const first = full.split(/\s+/)[0];
-  if (USERS[first]) return first;
-  return null;
+const loginForm   = document.getElementById('login-form');
+const loginPicker = document.getElementById('login-picker');
+const pickerList  = document.getElementById('picker-list');
+
+const firstToken = s => (s || '').trim().toLowerCase().split(/[\s\-_]+/)[0] || '';
+
+// Returns the list of user KEYS that match the typed name.
+// - exact key / full display-name  → that person
+// - a single first name shared by several → all of them (→ picker)
+// - first name + surname typed → narrowed to the specific person
+function findMatches(raw) {
+  const q = raw.trim().toLowerCase().replace(/\s+/g, ' ');
+  if (!q) return [];
+  const entries = Object.entries(USERS).filter(([k]) => k !== 'guest');
+
+  const exact = entries.filter(([k, u]) => k === q || (u.name || '').toLowerCase() === q);
+  if (exact.length) return exact.map(e => e[0]);
+
+  const qFirst = firstToken(q);
+  let pool = entries.filter(([k, u]) => firstToken(u.name || k) === qFirst || firstToken(k) === qFirst);
+
+  const tokens = q.split(' ');
+  if (tokens.length > 1) {
+    const narrowed = pool.filter(([k, u]) => tokens.every(t => ((u.name || k).toLowerCase() + ' ' + k).includes(t)));
+    if (narrowed.length) pool = narrowed;
+  }
+  return pool.map(e => e[0]);
+}
+
+function shakeCard() {
+  loginCard.classList.add('shake');
+  setTimeout(() => loginCard.classList.remove('shake'), 500);
+}
+
+function showPicker(keys) {
+  loginForm.style.display = 'none';
+  loginPicker.style.display = 'block';
+  pickerList.innerHTML = '';
+  keys.forEach(k => {
+    const b = document.createElement('button');
+    b.className = 'picker-opt';
+    b.textContent = USERS[k].name || k;
+    b.addEventListener('click', () => enterBrain(k));
+    pickerList.appendChild(b);
+  });
+}
+
+function hidePicker() {
+  loginPicker.style.display = 'none';
+  loginForm.style.display = '';
+  loginInput.focus();
+  loginInput.select();
 }
 
 function tryLogin() {
   const val = loginInput.value.trim();
-  if (!val) { loginCard.classList.add('shake'); setTimeout(()=>loginCard.classList.remove('shake'), 500); return; }
-  const key = findUser(val);
-  if (!key) {
+  if (!val) { shakeCard(); return; }
+  const matches = findMatches(val);
+  if (matches.length === 0) {
     loginFails++;
-    loginCard.classList.add('shake');
-    setTimeout(() => loginCard.classList.remove('shake'), 500);
+    shakeCard();
     if (loginFails >= 2) {
       loginMsg.innerHTML = `No neural record found for '<b>${val.replace(/</g,'&lt;')}</b>'.<br>Try your first name — or <span class="guest-link" id="guest-link">slip in as guest →</span>`;
       document.getElementById('guest-link').addEventListener('click', () => enterBrain('guest'));
@@ -1536,11 +1602,13 @@ function tryLogin() {
     }
     return;
   }
-  enterBrain(key);
+  if (matches.length === 1) { enterBrain(matches[0]); return; }
+  showPicker(matches);   // several people share this first name
 }
 
 loginBtn.addEventListener('click', tryLogin);
 loginInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') tryLogin(); });
+document.getElementById('picker-back').addEventListener('click', hidePicker);
 
 // ════════════════════════════════════════════════════════════
 // QUIZ — the brain firewall. 8s per question. Any miss = restart.
