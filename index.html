@@ -1593,14 +1593,10 @@ function tryLogin() {
   if (!val) { shakeCard(); return; }
   const matches = findMatches(val);
   if (matches.length === 0) {
-    loginFails++;
     shakeCard();
-    if (loginFails >= 2) {
-      loginMsg.innerHTML = `No neural record for '<b>${val.replace(/</g,'&lt;')}</b>'.<br><span class="guest-link">running fallback protocol…</span>`;
-      setTimeout(() => enterBrain('guest'), 1100);   // unknown → terminal fallback
-    } else {
-      loginMsg.textContent = `No record found for '${val}'. Double-check the spelling, or try just your first name.`;
-    }
+    loginBtn.disabled = true;
+    loginMsg.innerHTML = `No record found for '<b>${val.replace(/</g,'&lt;')}</b>'. <span class="guest-link">Loading cortex..</span>`;
+    setTimeout(() => enterBrain('guest'), 1200);   // unknown → straight into the fallback terminal
     return;
   }
   if (matches.length === 1) { enterBrain(matches[0]); return; }
