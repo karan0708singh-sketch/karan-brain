@@ -1956,16 +1956,33 @@ async function cmdMemories() {
   await sleep(300);
 
   const scanLines = [];
-  scanLines.push(['scanning 84,213 neural pathways...', 'dim']);
-  for (let i = 0; i < 5; i++) scanLines.push([hexLine(), 'darker']);
-  scanLines.push(['/brain/memories/2024/standup_that_ran_long.synapse ......... no match', 'darker']);
-  scanLines.push([hexLine(), 'darker']);
-  scanLines.push(['/brain/memories/2025/that_one_deadline.synapse ............. no match', 'darker']);
-  for (let i = 0; i < 4; i++) scanLines.push([hexLine(), 'darker']);
-  scanLines.push(['/brain/memories/2025/launch_night.synapse .................. checking', 'darker']);
-  for (let i = 0; i < 3; i++) scanLines.push([hexLine(), 'darker']);
-  scanLines.push(['/brain/memories/core/' + currentUser + '.synapse .................... <span class="cyan bold">MATCH</span>', 'dim']);
-  await dump(scanLines, 60);
+  const line   = (t, c = 'dim') => scanLines.push([t, c]);
+  const dumpN  = n => { for (let i = 0; i < n; i++) scanLines.push([hexLine(), 'darker']); };
+
+  line('> initializing neural intrusion toolkit v4.2 ...');
+  line('> target host: karan.brain   port: 0x' + randHex(4).toUpperCase());
+  dumpN(3);
+  line('> handshake w/ hippocampus .................... OK');
+  line('> bypassing amygdala firewall ................. BYPASSED', 'amber');
+  dumpN(4);
+  line('injecting synaptic probe @ 0x' + randHex(8).toUpperCase() + ' ... OK');
+  line('spoofing memory-controller ACLs .............. SPOOFED', 'amber');
+  line('tracing 84,213 neural pathways ...');
+  dumpN(3);
+  line('/brain/memories/2024/standup_that_ran_long ... no match', 'darker');
+  line('/brain/memories/2025/that_one_deadline ....... no match', 'darker');
+  dumpN(3);
+  line('decrypting sector 0x' + randHex(8).toUpperCase() + ' (AES-256-FEELINGS)');
+  line('sha256: ' + randHex(48).toLowerCase(), 'darker');
+  dumpN(3);
+  line('⚠ WARNING: emotional payload detected', 'red');
+  line('overriding tear-duct safety lock ............. DISABLED', 'red');
+  dumpN(2);
+  line('/brain/memories/2025/launch_night ............ checking', 'darker');
+  dumpN(2);
+  line('ACCESS LEVEL ESCALATED  →  ROOT', 'amber bold');
+  line('/brain/memories/core/' + currentUser + '.synapse ..... <span class="cyan bold">MATCH</span>');
+  await dump(scanLines, 38);
 
   await sleep(300);
   await progressBar('decrypting memory fragment (AES-256-FEELINGS)', 1300);
