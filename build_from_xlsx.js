@@ -42,9 +42,9 @@ for (const r of rows) {
 }
 
 users['guest'] = {
-  name: 'Guest',
-  memory: "No personal file found in Karan's brain for you -- but if you have this link, you clearly mattered enough to get it. Thank you for being part of the journey. Stay in touch -- the brain may be leaving the building, but it's still online.",
-  dept: 'Guest', quiz: false
+  name: 'Visitor',
+  memory: "Hey, we may have worked together, or maybe we didn't get the chance to work closely. Unfortunately, I wasn't able to write a personalized note for everyone here.\n\nBut please feel free to connect with me offline or on LinkedIn. Even if we haven't worked together directly, I remember faces, and I'd definitely be happy to help if you ever need anything.\n\nKeep growing, keep learning, and wishing you all the success ahead. Stay connected! 😊",
+  dept: 'Guest', quiz: false, fallback: true
 };
 
 const b64 = Buffer.from(unescape(encodeURIComponent(JSON.stringify(users))), 'binary').toString('base64');
