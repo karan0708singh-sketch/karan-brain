@@ -519,6 +519,8 @@
     word-wrap: break-word;
   }
   #terminal .line { min-height: 1.55em; white-space: pre-wrap; }
+  #terminal .line a { color: var(--cyan); text-shadow: 0 0 6px rgba(61,220,255,0.45); text-decoration: underline; cursor: pointer; }
+  #terminal .line a:hover { color: #aef0ff; text-shadow: 0 0 12px rgba(61,220,255,0.8); }
 
   .dim    { color: var(--green-dim); }
   .darker { color: var(--green-dark); }
@@ -2292,11 +2294,26 @@ async function cmdFallbackMemories(u) {
   memoriesSeen = true;
 }
 
+// ── --find_karan : the outside-world coordinates ──
+async function cmdFindKaran() {
+  println('');
+  await typeln('▸ pinging Karan in the outside world...', 'dim', 40);
+  await progressBar('  TRIANGULATING', 700, 'dim');
+  println('✓ signal acquired. the brain relocates here:', 'cyan');
+  println('');
+  println('   📧  <a href="mailto:karan0708singh@gmail.com">karan0708singh@gmail.com</a>');
+  println('   🔗  <a href="https://www.linkedin.com/in/karan-singh-a9577a1b8/" target="_blank" rel="noopener">linkedin.com/in/karan-singh</a>');
+  println('');
+  println('the brain leaves the building, but this line stays open. reach out anytime. 🧠', 'bold');
+  println('');
+}
+
 async function cmdHelp() {
   println('');
   await dump([
     ['AVAILABLE COMMANDS', 'bold'],
     ['  --memories              what Karan\'s brain stored about you', ''],
+    ['  --find_karan            reach Karan on the outside (email + LinkedIn)', ''],
     ['  karan --advice          one hard-earned PM lesson, random', ''],
     ['  blame karan             for when you need it after he\'s gone', ''],
     ['  ls                      look around the brain', ''],
@@ -2511,6 +2528,8 @@ async function handleShell(raw) {
 
   if (cmd === '--memories' || cmd === 'memories' || cmd === 'karan --memories' || cmd === 'memory') {
     await cmdMemories();
+  } else if (cmd === '--find_karan' || cmd === '--find-karan' || cmd === 'find_karan' || cmd === 'find karan' || cmd === 'find-karan') {
+    await cmdFindKaran();
   } else if (cmd === 'help' || cmd === '--help' || cmd === '?') {
     await cmdHelp();
   } else if (cmd === 'karan --advice' || cmd === 'advice' || cmd === '--advice') {
