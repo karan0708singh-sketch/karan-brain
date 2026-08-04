@@ -1966,13 +1966,14 @@ function timeUp() {
 }
 
 function quizFailed(reason) {
-  quizVerdict.querySelector('.v1').textContent = '⛔ ACCESS NOT GRANTED';
+  quizVerdict.querySelector('.v1').textContent = '⛔ ACCESS DENIED';
   quizVerdict.querySelector('.v2').innerHTML =
-    reason + ' Karan\'s brain rejected you.<br>Restarting interrogation from QUERY 01...';
+    reason + ' Progress saved — no restart.<br>Retrying from QUERY ' +
+    String(quizIdx + 1).padStart(2, '0') + '/' + String(activeQuiz.length).padStart(2, '0') + '...';
   quizVerdict.classList.add('fail', 'on');
   quizCard.classList.remove('low');
   setTimeout(() => {
-    quizIdx = 0;
+    // stay on the current question — keep everything cleared up to the last correct answer
     renderQuestion();
   }, 1600);
 }
