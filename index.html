@@ -2352,9 +2352,26 @@ async function cmdAdvice() {
 
 async function cmdBlame() {
   println('');
-  await sleep(400);
-  await typeln('Permission granted. Always.', 'bold', 24);
-  println('(this command will keep working long after July 31.)', 'dim');
+  await sleep(300);
+  const monkey = [
+    "         .-\"-.",
+    "       _/.-.-.\\_",
+    "      ( ( o o ) )",
+    "       |/  \"  \\|",
+    "       \\ .-. /",
+    "       /`\"\"\"`\\",
+    "      / /   \\ \\",
+    "     / /`\"\"\"`\\ \\",
+    "     \\/       \\/",
+    "     /  \\   /  \\",
+    "    (    | |    )",
+    "     '._/   \\_.'",
+    "        `\"\"\"`"
+  ];
+  for (const l of monkey) println(escapeHtml(l), 'amber');
+  println('');
+  await typeln("I'm leaving the building now — find someone else to pass the monkey. 🐒", 'bold', 26);
+  println('(the monkey is officially unassigned. good luck.)', 'dim');
   println('');
 }
 
