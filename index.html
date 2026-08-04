@@ -2242,7 +2242,7 @@ async function cmdMemories() {
   println('═══════ END OF FRAGMENT ═══════', 'cyan');
   println('');
   println('(1 memory rendered. Some things aren\'t stored in text — those stay with Karan.)', 'dim');
-  println('');
+  printConnectFooter();
   memoriesSeen = true;
 }
 
@@ -2290,8 +2290,24 @@ async function cmdFallbackMemories(u) {
   println('═══════ END OF MESSAGE ═══════', 'cyan');
   println('');
   println('(no file with your name yet — but the door stays open.)', 'dim');
-  println('');
+  printConnectFooter();
   memoriesSeen = true;
+}
+
+// the two clickable coordinates — reused by --find_karan and the memory footers
+function printConnectLinks() {
+  println('   📧  <a href="mailto:karan0708singh@gmail.com">karan0708singh@gmail.com</a>');
+  println('   🔗  <a href="https://www.linkedin.com/in/karan-singh-a9577a1b8/" target="_blank" rel="noopener">linkedin.com/in/karan-singh</a>');
+}
+
+// a short "stay connected" sign-off appended after every memory
+function printConnectFooter() {
+  println('');
+  println('─────────  STAY CONNECTED  ─────────', 'cyan bold');
+  println('I\'m leaving RapidShyp, but you can still connect with me on these two platforms:', '');
+  println('');
+  printConnectLinks();
+  println('');
 }
 
 // ── --find_karan : the outside-world coordinates ──
@@ -2301,8 +2317,7 @@ async function cmdFindKaran() {
   await progressBar('  TRIANGULATING', 700, 'dim');
   await typeln('Hey! I\'m leaving RapidShyp — but you can still connect with me on these two platforms:', 'cyan', 30);
   println('');
-  println('   📧  <a href="mailto:karan0708singh@gmail.com">karan0708singh@gmail.com</a>');
-  println('   🔗  <a href="https://www.linkedin.com/in/karan-singh-a9577a1b8/" target="_blank" rel="noopener">linkedin.com/in/karan-singh</a>');
+  printConnectLinks();
   println('');
   println('the brain leaves the building, but this line stays open. reach out anytime. 🧠', 'bold');
   println('');
