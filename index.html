@@ -1929,17 +1929,6 @@ function startQuizTimer() {
   }, 50);
 }
 
-// flash the right answer for a blink — visible, but gone before it helps
-function blinkCorrect(then) {
-  const btns = quizOpts.querySelectorAll('.quiz-opt');
-  const correctBtn = btns[activeQuiz[quizIdx].c];
-  if (correctBtn) correctBtn.classList.add('reveal');
-  setTimeout(() => {
-    if (correctBtn) correctBtn.classList.remove('reveal');
-    setTimeout(then, 140);
-  }, 200);
-}
-
 function answer(i, btn) {
   if (quizLocked) return;
   quizLocked = true;
@@ -1954,15 +1943,16 @@ function answer(i, btn) {
       else renderQuestion();
     }, 350);
   } else {
+    // no reveal — the right answer stays hidden so the retry is still a real attempt
     btn.classList.add('picked-wrong');
-    blinkCorrect(() => quizFailed('WRONG ANSWER.'));
+    setTimeout(() => quizFailed('WRONG ANSWER.'), 550);
   }
 }
 
 function timeUp() {
   quizLocked = true;
   quizOpts.querySelectorAll('.quiz-opt').forEach(b => b.disabled = true);
-  blinkCorrect(() => quizFailed("TIME'S UP."));
+  setTimeout(() => quizFailed("TIME'S UP."), 350);
 }
 
 function quizFailed(reason) {
